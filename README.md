@@ -28,3 +28,9 @@ object Add {
   //...
 }
 ```
+
+So it can be used:
+
+```
+implicitly[Add.Aux[_2, _3, _5]]
+```
