@@ -1,5 +1,7 @@
 # AUXify
 
+[![Build Status](https://travis-ci.org/DmytroMitin/AUXify.svg?branch=master)](https://travis-ci.org/DmytroMitin/AUXify)
+
 Transforms
 
 ```
