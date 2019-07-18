@@ -52,7 +52,7 @@ object thisMacro {
             }
           """
 
-      case _ => c.abort(c.enclosingPosition, "not class or object")
+      case _ => c.abort(c.enclosingPosition, "not trait, class or object")
     }
 
   }
