@@ -13,46 +13,70 @@ object AuxMacro {
   def impl(c: blackbox.Context)(annottees: c.Tree*): c.Tree = {
     import c.universe._
 
-    def modifyTparams(tparams: Seq[Tree]): Seq[Tree] = tparams.map {
-      case q"$_ type $name[..$tparams] >: $_ <: $_" => tq"$name[..$tparams]"
+    def modifyName(name: TypeName): TypeName = name match {
+      case TypeName("_") => TypeName(c.freshName("tparam"))
+      case _ => name
+    }
+
+    def modifyTparam(tparam: Tree): (TypeDef, Tree) = {
+      tparam match {
+        case q"$mods type $name[..$tparams] >: $low <: $high" =>
+          val name1 = modifyName(name)
+          (
+            q"$mods type $name1[..$tparams] >: $low <: $high",
+            tq"$name1"
+          )
+      }
+    }
+
+    def modifyTparams(tparams: Seq[Tree]): (Seq[TypeDef], Seq[Tree]) = {
+      val res = tparams.map(modifyTparam(_))
+      (res.map(_._1), res.map(_._2))
     }
 
     def extractTyps(stats: Seq[Tree]): (Seq[TypeDef], Seq[TypeDef]) = {
       val typs = stats.collect {
-        case q"$_ type $name[..$tparams] >: $low <: $high" =>
+        case q"$mods type $name[..$tparams] >: $low <: $high" =>
           val name0 = TypeName(name.toString + "0")
-          (q"${Modifiers()} type $name0[..$tparams] >: $low <: $high",
-            q"${Modifiers()} type $name = $name0")
+          val modifiedTparams = modifyTparams(tparams)
+          (
+            q"${Modifiers(Flag.PARAM)} type $name0[..$tparams] >: $low <: $high",
+            q"${Modifiers()} type $name[..${modifiedTparams._1}] = $name0[..${modifiedTparams._2}]"
+          )
       }
 
       (typs.map(_._1), typs.map(_._2))
     }
 
+    def createAux(tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree]): Tree = {
+      val (tparams1, typs) = extractTyps(stats)
+      val tparams2 = modifyTparams(tparams)._2
+      q"type Aux[..${tparams ++ tparams1}] = $tpname[..$tparams2] { ..$typs }"
+    }
+
+    def createObject(name: TermName, earlydefns: Seq[Tree], parents: Seq[Tree], self: Tree, tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree], body: Seq[Tree]): Tree =
+      q"""
+         object $name extends { ..$earlydefns } with ..$parents { $self =>
+           ${createAux(tparams, tpname, stats)}
+           ..$body
+         }
+       """
+
     annottees match {
       case (trt @ q"$_ trait $tpname[..$tparams] extends { ..$_ } with ..$_ { $_ => ..$stats }") ::
         q"$mods object $tname extends { ..$earlydefns } with ..$parents { $self => ..$body }" :: Nil =>
-
-        val (tparams1, typs) = extractTyps(stats)
-        val tparams2 = modifyTparams(tparams)
-
         q"""
             $trt
-            $mods object $tname extends { ..$earlydefns } with ..$parents { $self =>
-              type Aux[..${tparams ++ tparams1}] = $tpname[..$tparams2] { ..$typs }
-              ..$body
-            }
+            ${createObject(tname, earlydefns, parents, self, tparams, tpname, stats, body)}
           """
 
       case (trt @ q"$_ trait $tpname[..$tparams] extends { ..$_ } with ..$_ { $_ => ..$stats }") :: Nil =>
-        val (tparams1, typs) = extractTyps(stats)
-        val tparams2 = modifyTparams(tparams)
-
         q"""
             $trt
-            object ${tpname.toTermName} {
-              type Aux[..${tparams ++ tparams1}] = $tpname[..$tparams2] { ..$typs }
-            }
+            ${createObject(tpname.toTermName, Seq(), Seq(), q"val ${TermName(c.freshName("self"))} = $EmptyTree", tparams, tpname, stats, Seq())}
           """
+
+      case _ => c.abort(c.enclosingPosition, "not trait")
     }
   }
 }
