@@ -4,7 +4,10 @@ version := "0.1"
 
 val commonSettings = Seq(
   scalaVersion := "2.13.0",
-  scalacOptions += "-Ymacro-annotations",
+  scalacOptions ++= Seq(
+    "-Ymacro-annotations",
+    "-Ymacro-debug-lite",
+  ),
 )
 
 lazy val macros: Project = (project in file("macros")).settings(
