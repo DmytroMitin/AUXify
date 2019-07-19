@@ -50,16 +50,12 @@ sealed trait Nat {
 }
 
 @This
-case object _0 extends Nat {
-  override type This = _0
-}
+case object _0 extends Nat 
 
 type _0 = _0.type
 
 @This
-case class Succ[N <: Nat](n: N) extends Nat {
-  override type This = Succ[N]
-}
+case class Succ[N <: Nat](n: N) extends Nat
 ```
 
 into
