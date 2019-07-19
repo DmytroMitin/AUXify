@@ -76,3 +76,10 @@ case class Succ[N <: Nat](n: N) extends Nat {
   override type This = Succ[N]
 }
 ```
+
+Generating lower bound `>: this.type` and/or F-bound `type This = self.This` can be switched off
+```
+@This(lowerBound = false, fBound = false)
+@This(lowerBound = false)
+@This(fBound = false)
+```
