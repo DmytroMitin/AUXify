@@ -1,9 +1,10 @@
 package com.github.dmytromitin
 
-import scala.annotation.StaticAnnotation
+import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
+@compileTimeOnly("enable -Ymacro-annotations to expand macro annotations")
 class This(lowerBound: Boolean = true, fBound: Boolean = true) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro thisMacro.impl
 }

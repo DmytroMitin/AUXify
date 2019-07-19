@@ -4,7 +4,7 @@ import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
-@compileTimeOnly("enable macro paradise to expand macro annotations")
+@compileTimeOnly("enable -Ymacro-annotations to expand macro annotations")
 class Aux extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro AuxMacro.impl
 }
