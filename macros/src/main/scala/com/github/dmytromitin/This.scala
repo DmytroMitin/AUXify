@@ -1,18 +1,21 @@
 package com.github.dmytromitin
 
+import macrocompat.bundle
+
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
-import scala.reflect.macros.blackbox
+import scala.reflect.macros.whitebox
 
-@compileTimeOnly("enable -Ymacro-annotations to expand macro annotations")
+@compileTimeOnly("enable macro paradise or -Ymacro-annotations")
 class This(lowerBound: Boolean = true, fBound: Boolean = true) extends StaticAnnotation {
-  def macroTransform(annottees: Any*): Any = macro thisMacro.impl
+  def macroTransform(annottees: Any*): Any = macro ThisMacro.impl
 }
 
-object thisMacro {
-  def impl(c: blackbox.Context)(annottees: c.Tree*): c.Tree = {
-    import c.universe._
+@bundle
+class ThisMacro(val c: whitebox.Context) {
+  import c.universe._
 
+  def impl(annottees: Tree*): Tree = {
     val (isLowerBoundOn, isFBoundOn) = c.prefix.tree match {
       case q"new This(lowerBound = ${lb: Boolean}, fBound     = ${fb: Boolean})" => (lb,   fb)
       case q"new This(fBound     = ${fb: Boolean}, lowerBound = ${lb: Boolean})" => (lb,   fb)
@@ -27,7 +30,7 @@ object thisMacro {
     }
 
     def modifyTparams(tparams: Seq[Tree]): Seq[Tree] = tparams.map {
-      case q"$_ type $name[..$tparams] >: $_ <: $_" => tq"$name"
+      case q"$mods type $name[..$tparams] >: $lower <: $higher" => tq"$name"
     }
 
     annottees match {
@@ -38,7 +41,7 @@ object thisMacro {
           case _ => self
         }
         val self2 = self1 match {
-          case q"$_ val $selfName: $_ = $_" => selfName
+          case q"$mods val $selfName: $tpt = $expr" => selfName
         }
         val lowerBound = if (isLowerBoundOn) tq"this.type" else tq"_root_.scala.Nothing"
         val fBound = if (isFBoundOn) Seq(q"type This = $self2.This") else Seq[Tree]()

@@ -13,19 +13,39 @@ lazy val root = (project in file("."))
   .aggregate(macros, core)
   .settings(
     crossScalaVersions := Nil,
-    publish / skip := true
+    publish / skip := true,
   )
 
 val commonSettings = Seq(
   crossScalaVersions := supportedScalaVersions,
-  scalacOptions ++= Seq(
-    "-Ymacro-annotations",
+  scalacOptions ++= (
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, v)) if v >= 13 => Seq("-Ymacro-annotations")
+      case _                       => Nil
+    }) ++ Seq(
 //    "-Ymacro-debug-lite",
 //    "-Ymacro-debug-verbose",
 //    "-Ydebug",
 //    "-Xprint:typer",
 //    "-Xprint-types",
   ),
+  resolvers ++= Seq(
+    Resolver.sonatypeRepo("releases"),
+    Resolver.sonatypeRepo("snapshots")
+  ),
+  libraryDependencies ++= (
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, v)) if v >= 13 => Seq(
+        "org.typelevel" % "macro-compat_2.13.0-RC2" % "1.1.1",
+      )
+      case _                       => Seq(
+        compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
+        "org.typelevel" %% "macro-compat" % "1.1.1",
+      )
+    }
+  ) ++ Seq(
+    "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
+  )
 )
 
 lazy val macros: Project = (project in file("macros")).settings(
