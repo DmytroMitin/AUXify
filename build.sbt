@@ -6,7 +6,11 @@ val commonSettings = Seq(
   scalaVersion := "2.13.0",
   scalacOptions ++= Seq(
     "-Ymacro-annotations",
-    "-Ymacro-debug-lite",
+//    "-Ymacro-debug-lite",
+//    "-Ymacro-debug-verbose",
+//    "-Ydebug",
+//    "-Xprint:typer",
+//    "-Xprint-types",
   ),
 )
 
