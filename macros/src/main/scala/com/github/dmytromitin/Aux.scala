@@ -62,19 +62,19 @@ object AuxMacro {
          }
        """
 
+    def createBlock(trt: Tree, name: TermName, earlydefns: Seq[Tree], parents: Seq[Tree], self: Tree, tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree], body: Seq[Tree]): Tree =
+      q"""
+          $trt
+          ${createObject(name, earlydefns, parents, self, tparams, tpname, stats, body)}
+        """
+
     annottees match {
       case (trt @ q"$_ trait $tpname[..$tparams] extends { ..$_ } with ..$_ { $_ => ..$stats }") ::
         q"$mods object $tname extends { ..$earlydefns } with ..$parents { $self => ..$body }" :: Nil =>
-        q"""
-            $trt
-            ${createObject(tname, earlydefns, parents, self, tparams, tpname, stats, body)}
-          """
+        createBlock(trt, tname, earlydefns, parents, self, tparams, tpname, stats, body)
 
       case (trt @ q"$_ trait $tpname[..$tparams] extends { ..$_ } with ..$_ { $_ => ..$stats }") :: Nil =>
-        q"""
-            $trt
-            ${createObject(tpname.toTermName, Seq(), Seq(), q"val ${TermName(c.freshName("self"))} = $EmptyTree", tparams, tpname, stats, Seq())}
-          """
+        createBlock(trt, tpname.toTermName, Seq(), Seq(), q"val ${TermName(c.freshName("self"))} = $EmptyTree", tparams, tpname, stats, Seq())
 
       case _ => c.abort(c.enclosingPosition, "not trait")
     }
