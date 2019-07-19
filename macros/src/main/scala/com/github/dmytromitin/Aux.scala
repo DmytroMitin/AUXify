@@ -76,7 +76,7 @@ class AuxMacro(val c: whitebox.Context) {
         createBlock(trt, tname, earlydefns, parents, self, tparams, tpname, stats, body)
 
       case (trt @ q"$mods1 trait $tpname[..$tparams] extends { ..$earlydefns1 } with ..$parents1 { $self1 => ..$stats }") :: Nil =>
-        createBlock(trt, tpname.toTermName, Seq(), Seq(), q"val ${TermName(c.freshName("self"))} = $EmptyTree", tparams, tpname, stats, Seq())
+        createBlock(trt, tpname.toTermName, Seq(), Seq(tq"_root_.scala.AnyRef"), q"val ${TermName(c.freshName("self"))} = $EmptyTree", tparams, tpname, stats, Seq())
 
       case _ => c.abort(c.enclosingPosition, "not trait")
     }
