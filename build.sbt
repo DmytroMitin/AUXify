@@ -39,9 +39,9 @@ ThisBuild / publishTo := {
 }
 ThisBuild / publishMavenStyle := true
 
-useGpg := true
+ThisBuild / useGpg := true
 
-credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
+ThisBuild / credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
 
 lazy val root = (project in file("."))
   .aggregate(macros, core)
@@ -50,7 +50,7 @@ lazy val root = (project in file("."))
     publish / skip := true,
   )
 
-val commonSettings = Seq(
+lazy val commonSettings = Seq(
   crossScalaVersions := supportedScalaVersions,
   scalacOptions ++= (
     CrossVersion.partialVersion(scalaVersion.value) match {
@@ -78,16 +78,19 @@ val commonSettings = Seq(
       )
     }
   ) ++ Seq(
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
+    scalaOrganization.value % "scala-compiler" % scalaVersion.value % Provided,
   )
 )
 
-lazy val macros: Project = (project in file("macros")).settings(
+lazy val macros = (project in file("macros")).settings(
+  name := "auxify-macros",
   libraryDependencies += scalaOrganization.value % "scala-reflect" % scalaVersion.value,
   commonSettings,
 )
 
-lazy val core: Project = (project in file("core")).dependsOn(macros).settings(
+lazy val core = (project in file("core")).dependsOn(macros).settings(
+  name := "auxify-core",
   libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test,
   commonSettings,
+  publish / skip := true,
 )
