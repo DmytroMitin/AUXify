@@ -8,7 +8,7 @@ ThisBuild / name         := "auxify"
 ThisBuild / organization := "com.github.dmytromitin"
 ThisBuild / organizationName := "Dmytro Mitin"
 ThisBuild / organizationHomepage := Some(url("https://github.com/DmytroMitin"))
-ThisBuild / version      := "0.1"
+ThisBuild / version      := "0.2"
 ThisBuild / scalaVersion := scala213
 
 ThisBuild / scmInfo := Some(
