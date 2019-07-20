@@ -1,7 +1,6 @@
 package com.github.dmytromitin
 
 import macrocompat.bundle
-
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
