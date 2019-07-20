@@ -113,17 +113,18 @@ object Add {
 ```
 into
 ```scala
-@instance
 trait Add[N <: Nat, M <: Nat] {
   type Out <: Nat
   def apply(n: N, m: M): Out
 }
 
 object Add {
-  def instance[N <: Nat, M <: Nat, Out0 <: Nat](f: (N, M) => Out0): Add[N, M] { type Out = Out0 } = new Add[N, M] {
-    override type Out = Out0
-    override def apply(n: N, m: M): Out = f(n, m)
-  }
+  def instance[N <: Nat, M <: Nat, Out0 <: Nat](f: (N, M) => Out0): Add[N, M] { type Out = Out0 } = 
+    new Add[N, M] {
+      override type Out = Out0
+      override def apply(n: N, m: M): Out = f(n, m)
+    }
+    
   //...
 }
 ```
