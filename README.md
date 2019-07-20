@@ -98,7 +98,7 @@ Generating lower bound `>: this.type` and/or F-bound `type This = self.This` for
 @This(lowerBound = false, fBound = false)
 ```
 
-## @instance
+## @instance (constructor)
 Transforms
 ```scala
 @instance
@@ -130,3 +130,30 @@ object Add {
 ```
 
 Polymorphic methods are not supported (since Scala 2 lacks polymorphic functions).
+
+## @apply (materializer)
+Transforms
+```scala
+@apply
+trait Add[N <: Nat, M <: Nat] {
+  type Out <: Nat
+  def apply(n: N, m: M): Out
+}
+
+object Add {
+  //...
+}
+```
+into
+```scala
+trait Add[N <: Nat, M <: Nat] {
+  type Out <: Nat
+  def apply(n: N, m: M): Out
+}
+
+object Add {
+  def apply[N <: Nat, M <: Nat](implicit inst: Add[N, M]): Add[N, M] { type Out = inst.Out } = inst
+    
+  //...
+}
+```
