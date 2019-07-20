@@ -40,7 +40,8 @@ class ThisAuxTest extends FlatSpec with Matchers {
       instance((succN, m) => Succ(add(succN.n, m)))
   }
 
-  implicitly[Add.Aux[_2, _3, Add[_2, _3], _5]]
+  val add = implicitly[Add.Aux[_2, _3, Add[_2, _3], _5]]
+  implicitly[add.This =:= Add[_2, _3]]
 
   "2 + 3" should "be 5" in {
     implicitly[Add[_2, _3]].apply(_2, _3) should be (_5)
