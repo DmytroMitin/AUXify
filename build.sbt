@@ -6,8 +6,42 @@ lazy val supportedScalaVersions = List(scala213, scala212, scala211, scala210)
 
 ThisBuild / name         := "auxify"
 ThisBuild / organization := "com.github.dmytromitin"
+ThisBuild / organizationName := "Dmytro Mitin"
+ThisBuild / organizationHomepage := Some(url("https://github.com/DmytroMitin"))
 ThisBuild / version      := "0.1"
 ThisBuild / scalaVersion := scala213
+
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/DmytroMitin/AUXify"),
+    "https://github.com/DmytroMitin/AUXify.git"
+  )
+)
+ThisBuild / developers := List(
+  Developer(
+    id    = "DmytroMitin",
+    name  = "Dmytro Mitin",
+    email = "dmitin3@gmail.com",
+    url   = url("https://github.com/DmytroMitin")
+  )
+)
+
+ThisBuild / description := "Library providing macro annotations Aux, This etc."
+ThisBuild / licenses := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / homepage := Some(url("https://github.com/DmytroMitin/AUXify"))
+
+// Remove all additional repository other than Maven Central from POM
+ThisBuild / pomIncludeRepository := { _ => false }
+ThisBuild / publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
+  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
+ThisBuild / publishMavenStyle := true
+
+useGpg := true
+
+credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
 
 lazy val root = (project in file("."))
   .aggregate(macros, core)
