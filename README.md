@@ -128,3 +128,5 @@ object Add {
   //...
 }
 ```
+
+Polymorphic methods are not supported (since Scala 2 lacks polymorphic functions).
