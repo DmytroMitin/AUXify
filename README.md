@@ -1,6 +1,7 @@
 # AUXify
 
 [![Build Status](https://travis-ci.org/DmytroMitin/AUXify.svg?branch=master)](https://travis-ci.org/DmytroMitin/AUXify)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.dmytromitin/auxify-macros/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.dmytromitin/auxify-macros)
 
 ## Using
 Write in `build.sbt`
@@ -13,11 +14,8 @@ scalaVersion := "2.13.0"
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots"),
-  Resolver.sonatypeRepo("staging"),
-  "Sonatype Staging" at "https://oss.sonatype.org/service/local/staging/deployByRepositoryId/comgithubdmytromitin-1000"
+  Resolver.sonatypeRepo("staging")
 )
-
-credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
 
 libraryDependencies += "com.github.dmytromitin" %% "auxify-macros" % "0.1"
 
