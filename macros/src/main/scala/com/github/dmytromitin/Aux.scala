@@ -39,7 +39,7 @@ class AuxMacro(val c: whitebox.Context) {
     def extractTyps(stats: Seq[Tree]): (Seq[TypeDef], Seq[TypeDef]) = {
       val typs = stats.collect {
         case q"$mods type $name[..$tparams] >: $low <: $high" =>
-          val name0 = TypeName(name.toString + "0")
+          val name0 = TypeName(c.freshName(name.toString + "0"))
           val modifiedTparams = modifyTparams(tparams)
           (
             q"${Modifiers(Flag.PARAM)} type $name0[..$tparams] >: $low <: $high",
