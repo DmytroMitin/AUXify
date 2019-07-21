@@ -36,10 +36,6 @@ trait Add[N <: Nat, M <: Nat] {
   type Out <: Nat
   def apply(n: N, m: M): Out
 }
-
-object Add {
-  //...
-}
 ```
 into
 ```scala
@@ -50,15 +46,13 @@ trait Add[N <: Nat, M <: Nat] {
 
 object Add {
   type Aux[N <: Nat, M <: Nat, Out0 <: Nat] = Add[N, M] { type Out = Out0 }
-  
-  //...
 }
 ```
-
 So it can be used:
 ```scala
 implicitly[Add.Aux[_2, _3, _5]]
 ```
+Convenient for type-level programming.
 
 ## @This
 Transforms
@@ -93,6 +87,7 @@ case class Succ[N <: Nat](n: N) extends Nat {
   override type This = Succ[N]
 }
 ```
+Convenient for type-level programming.
 
 Generating lower bound `>: this.type` and/or F-bound `type This = self.This` for trait can be switched off
 ```scala
@@ -103,30 +98,24 @@ Generating lower bound `>: this.type` and/or F-bound `type This = self.This` for
 Transforms
 ```scala
 @instance
-trait Add[N <: Nat, M <: Nat] {
-  type Out <: Nat
-  def apply(n: N, m: M): Out
-}
-
-object Add {
-  //...
+trait Monoid[A] {
+  def empty: A
+  def combine(a: A, a1: A): A
 }
 ```
 into
 ```scala
-trait Add[N <: Nat, M <: Nat] {
-  type Out <: Nat
-  def apply(n: N, m: M): Out
+@instance
+trait Monoid[A] {
+  def empty: A
+  def combine(a: A, a1: A): A
 }
 
-object Add {
-  def instance[N <: Nat, M <: Nat, Out0 <: Nat](f: (N, M) => Out0): Add[N, M] { type Out = Out0 } = 
-    new Add[N, M] {
-      override type Out = Out0
-      override def apply(n: N, m: M): Out = f(n, m)
-    }
-    
-  //...
+object Monoid {
+  def instance[A](f: => A, f1: (A, A) => A): Monoid[A] = new Monoid[A] {
+    override def empty: A = f
+    override def combine(a: A, a1: A): A = f1(a, a1)
+  }
 }
 ```
 
@@ -140,10 +129,6 @@ trait Add[N <: Nat, M <: Nat] {
   type Out <: Nat
   def apply(n: N, m: M): Out
 }
-
-object Add {
-  //...
-}
 ```
 into
 ```scala
@@ -154,7 +139,25 @@ trait Add[N <: Nat, M <: Nat] {
 
 object Add {
   def apply[N <: Nat, M <: Nat](implicit inst: Add[N, M]): Add[N, M] { type Out = inst.Out } = inst
-    
-  //...
+}
+```
+
+## @delegated
+Generates methods in companion object delegating to implicit instance of trait.
+Transforms
+```scala
+@delegated
+trait Show[A] {
+  def show(a: A): String
+}
+```
+into
+```scala
+trait Show[A] {
+  def show(a: A): String
+}
+
+object Add {
+  def show[A](a: A)(implicit inst: Show[A]): String = inst.show(a)
 }
 ```

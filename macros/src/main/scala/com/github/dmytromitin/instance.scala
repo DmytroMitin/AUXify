@@ -11,22 +11,8 @@ class instance extends StaticAnnotation {
 }
 
 @bundle
-class InstanceMacro(val c: whitebox.Context) {
+class InstanceMacro(val c: whitebox.Context) extends Helpers {
   import c.universe._
-
-  implicit class ModifiersOps(left: Modifiers) {
-    def & (right: FlagSet): Modifiers = left match {
-      case Modifiers(flags, privateWithin, annots) => Modifiers(flags & right, privateWithin, annots)
-    }
-    def | (right: FlagSet): Modifiers = left match {
-      case Modifiers(flags, privateWithin, annots) => Modifiers(flags | right, privateWithin, annots)
-    }
-  }
-
-  implicit class FlagSetOps(left: FlagSet) {
-    def & (right: FlagSet): FlagSet = (left.asInstanceOf[Long] & right.asInstanceOf[Long]).asInstanceOf[FlagSet]
-    def unary_~ : FlagSet = (~ left.asInstanceOf[Long]).asInstanceOf[FlagSet]
-  }
 
   def impl(annottees: Tree*): Tree = {
     def modifyName(name: TypeName): TypeName = name match {
@@ -51,12 +37,11 @@ class InstanceMacro(val c: whitebox.Context) {
     }
 
     def createTypeNameMap(stats: Seq[Tree]): Map[TypeName, TypeName] =
-      stats.foldRight(Map[TypeName, TypeName]())((stat, map) => stat match {
+      stats.collect {
         case q"$mods type $name[..$tparams] >: $low <: $high" =>
           val name0 = TypeName(c.freshName(name.toString + "0"))
-          map + (name -> name0)
-        case _ => map
-      })
+          name -> name0
+      }.toMap
 
     def createFunctionType(paramss: Seq[Seq[Tree]], tpt: Tree): Tree =
       paramss.foldRight(tpt: Tree)((params: Seq[Tree], acc: Tree) => tq"(..$params) => $acc")
