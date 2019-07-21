@@ -125,12 +125,30 @@ Polymorphic methods are not supported (since Scala 2 lacks polymorphic functions
 Transforms
 ```scala
 @apply
+trait Show[A] {
+  def show(a: A): String
+}
+```
+into 
+```scala
+trait Show[A] {
+  def show(a: A): String
+}
+
+object Show {
+  def apply[A](implicit inst: Show[A]): Show[A] = inst
+}
+```
+Method materializing type class can return more precise type than the one of implicit to be found (like `the` in [Shapeless](https://github.com/milessabin/shapeless) or [Dotty](https://github.com/lampepfl/dotty)).
+For example
+```scala
+@apply
 trait Add[N <: Nat, M <: Nat] {
   type Out <: Nat
   def apply(n: N, m: M): Out
 }
 ```
-into
+is transformed into
 ```scala
 trait Add[N <: Nat, M <: Nat] {
   type Out <: Nat
@@ -141,9 +159,11 @@ object Add {
   def apply[N <: Nat, M <: Nat](implicit inst: Add[N, M]): Add[N, M] { type Out = inst.Out } = inst
 }
 ```
+[Simulacrum](https://github.com/typelevel/simulacrum) annotation `@typeclass` also generates, among other, materializer but doesn't support type classes with multiple type parameters.
 
 ## @delegated
-Generates methods in companion object delegating to implicit instance of trait.
+Generates methods in companion object delegating to implicit instance of trait (type class).
+
 Transforms
 ```scala
 @delegated
@@ -161,3 +181,5 @@ object Add {
   def show[A](a: A)(implicit inst: Show[A]): String = inst.show(a)
 }
 ```
+
+## @syntax
