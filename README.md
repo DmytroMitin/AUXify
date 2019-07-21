@@ -22,7 +22,7 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("staging")
 )
 
-libraryDependencies += "com.github.dmytromitin" %% "auxify-macros" % "0.1"
+libraryDependencies += "com.github.dmytromitin" %% "auxify-macros" % "0.2"
 
 scalacOptions += "-Ymacro-annotations" // in Scala >= 2.13
 //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) // in Scala <= 2.12
