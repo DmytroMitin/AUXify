@@ -28,7 +28,7 @@ class SyntaxMonoidTest extends FlatSpec with Matchers {
   import Monoid.syntax._
 
   "2 + 3" should "be 5" in {
-    2.combine(3) should be (5)
+    2 combine 3 should be (5)
   }
 
 }

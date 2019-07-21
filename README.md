@@ -5,7 +5,6 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.dmytromitin/auxify_2.13.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.dmytromitin%22%20AND%20a:%22auxify_2.13%22)
 
 [sonatype](https://oss.sonatype.org/content/groups/public/com/github/dmytromitin/)
-[search.maven](https://search.maven.org/artifact/com.github.dmytromitin/auxify_2.13/0.1/jar)
 [mvnrepository](https://mvnrepository.com/artifact/com.github.dmytromitin)
 
 ## Using
@@ -16,11 +15,7 @@ scalaVersion := "2.13.0"
 //scalaVersion := "2.11.12"
 //scalaVersion := "2.10.7"
 
-resolvers ++= Seq(
-  Resolver.sonatypeRepo("releases"),
-  Resolver.sonatypeRepo("snapshots"),
-  Resolver.sonatypeRepo("staging")
-)
+resolvers += Resolver.sonatypeRepo("releases")
 
 libraryDependencies += "com.github.dmytromitin" %% "auxify-macros" % "0.2"
 
@@ -118,6 +113,10 @@ object Monoid {
   }
 }
 ```
+So it can be used
+```scala
+implicit val intMonoid: Monoid[Int] = instance(0, _ + _)
+```
 
 Polymorphic methods are not supported (since Scala 2 lacks polymorphic functions).
 
@@ -139,6 +138,11 @@ object Show {
   def apply[A](implicit inst: Show[A]): Show[A] = inst
 }
 ```
+So it can be used
+```scala
+Show[Int].show(10)
+```
+
 Method materializing type class can return more precise type than the one of implicit to be found (like `the` in [Shapeless](https://github.com/milessabin/shapeless) or [Dotty](https://github.com/lampepfl/dotty)).
 For example
 ```scala
@@ -181,6 +185,10 @@ object Add {
   def show[A](a: A)(implicit inst: Show[A]): String = inst.show(a)
 }
 ```
+So it can be used
+`````scala
+Show.show(10)
+`````
 
 ## @syntax
 Transforms
@@ -206,6 +214,11 @@ object Monoid {
     }
   }
 }
+```
+So it can be used
+```scala
+import Monoid.syntax._
+2 combine 3
 ```
 [Simulacrum](https://github.com/typelevel/simulacrum) annotation `@typeclass` also generates syntax but doesn't support type classes with multiple type parameters.
 
