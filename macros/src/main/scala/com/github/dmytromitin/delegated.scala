@@ -61,6 +61,28 @@ class DelegatedMacro(val c: whitebox.Context) extends Helpers {
       transformer.transform(tpt)
     }
 
+    def addImplicitToParamss(paramss: Seq[Seq[Tree]], implct: Tree): Seq[Seq[Tree]] = {
+      println("paramss.isEmpty="+ paramss.isEmpty)
+      if (paramss.isEmpty) paramss :+ Seq(implct)
+      else {
+        val last = paramss.last
+        println("last.isEmpty="+last.isEmpty)
+        if (last.isEmpty) paramss :+ Seq(implct)
+        else {
+          last.head match {
+            case q"${mods: Modifiers} val $tname: $tpt = $expr" =>
+              println("mods hasFlag Flag.IMPLICIT="+(mods hasFlag Flag.IMPLICIT))
+              if (mods hasFlag Flag.IMPLICIT) {
+                val res = paramss.init :+ (last :+ implct)
+                println("res="+res)
+                res
+              }
+              else paramss :+ Seq(implct)
+          }
+        }
+      }
+    }
+
     def modifyStat(tparams: Seq[TypeDef], tpname: TypeName, typeNameSet: Set[TypeName]): PartialFunction[Tree, Tree] = {
       val inst = TermName(c.freshName("inst"))
 
@@ -70,8 +92,8 @@ class DelegatedMacro(val c: whitebox.Context) extends Helpers {
           val methodTparams1 = modifyTparams(methodTparams)
           val paramNamess = modifyParamss(paramss)
           val tpt1 = modifyType(tpt, typeNameSet, inst)
-          // TODO paramss can already have implicits
-          q"${mods & ~Flag.DEFERRED} def $tname[..${tparams1._1 ++ methodTparams}](...$paramss)(implicit $inst: $tpname[..${tparams1._2}]): $tpt1 = $inst.$tname[..${methodTparams1._2}](...$paramNamess)"
+          val implct = q"implicit val $inst: $tpname[..${tparams1._2}]"
+          q"${mods & ~Flag.DEFERRED} def $tname[..${tparams1._1 ++ methodTparams}](...${addImplicitToParamss(paramss, implct)}): $tpt1 = $inst.$tname[..${methodTparams1._2}](...$paramNamess)"
       }
     }
 
