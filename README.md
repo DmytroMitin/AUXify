@@ -183,3 +183,30 @@ object Add {
 ```
 
 ## @syntax
+Transforms
+```scala
+@syntax
+trait Monoid[A] {
+  def empty: A
+  def combine(a: A, a1: A): A
+}
+
+```
+into
+```scala
+trait Monoid[A] {
+  def empty: A
+  def combine(a: A, a1: A): A
+}
+
+object Monoid {
+  object syntax {
+    implicit class Ops[A](a: A) {
+      def combine(a1: A)(implicit inst: Monoid[A]): A = inst.combine(a, a1)
+    }
+  }
+}
+```
+[Simulacrum](https://github.com/typelevel/simulacrum) annotation `@typeclass` also generates syntax but doesn't support type classes with multiple type parameters.
+
+Inheritance of type classes is not supported (anyway it's [broken](https://typelevel.org/blog/2016/09/30/subtype-typeclasses.html)).
