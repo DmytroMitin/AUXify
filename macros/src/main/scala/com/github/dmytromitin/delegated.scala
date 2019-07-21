@@ -50,10 +50,10 @@ class DelegatedMacro(val c: whitebox.Context) extends Helpers {
         case q"$mods type $name[..$tparams] >: $low <: $high" => name
       }.toSet
 
-    def modifyType(tpt: Tree, typeNameSet: Set[TypeName]): Tree = {
+    def modifyType(tpt: Tree, typeNameSet: Set[TypeName], inst: TermName): Tree = {
       val transformer = new Transformer {
         override def transform(tree: Tree): Tree = tree match {
-          case tq"${name: TypeName}" => if (typeNameSet(name)) tq"inst.$name" else tq"$name"
+          case tq"${name: TypeName}" => if (typeNameSet(name)) tq"$inst.$name" else tq"$name"
           case _ => super.transform(tree)
         }
       }
@@ -62,17 +62,20 @@ class DelegatedMacro(val c: whitebox.Context) extends Helpers {
     }
 
     def modifyStat(tparams: Seq[TypeDef], tpname: TypeName, typeNameSet: Set[TypeName]): PartialFunction[Tree, Tree] = {
-      case q"${mods: Modifiers} def $tname[..$methodTparams](...$paramss): $tpt = ${`EmptyTree`}" =>
-        val tparams1 = modifyTparams(tparams)
-        val methodTparams1 = modifyTparams(methodTparams)
-        val paramNamess = modifyParamss(paramss)
-        val tpt1 = modifyType(tpt, typeNameSet)
-        // TODO paramss can already have implicits
-        // TODO restore higiene for inst
-        q"${mods & ~Flag.DEFERRED} def $tname[..${tparams1._1 ++ methodTparams}](...$paramss)(implicit inst: $tpname[..${tparams1._2}]): $tpt1 = inst.$tname[..${methodTparams1._2}](...$paramNamess)"
+      val inst = TermName(c.freshName("inst"))
+
+      {
+        case q"${mods: Modifiers} def $tname[..$methodTparams](...$paramss): $tpt = ${`EmptyTree`}" =>
+          val tparams1 = modifyTparams(tparams)
+          val methodTparams1 = modifyTparams(methodTparams)
+          val paramNamess = modifyParamss(paramss)
+          val tpt1 = modifyType(tpt, typeNameSet, inst)
+          // TODO paramss can already have implicits
+          q"${mods & ~Flag.DEFERRED} def $tname[..${tparams1._1 ++ methodTparams}](...$paramss)(implicit $inst: $tpname[..${tparams1._2}]): $tpt1 = $inst.$tname[..${methodTparams1._2}](...$paramNamess)"
+      }
     }
 
-    def createCompanionMethods(tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree]): Seq[Tree] = {
+    def createDelegatingMethods(tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree]): Seq[Tree] = {
       val typeNameSet = createTypeNameSet(stats)
       stats.collect(modifyStat(tparams, tpname, typeNameSet))
     }
@@ -80,7 +83,7 @@ class DelegatedMacro(val c: whitebox.Context) extends Helpers {
     def createObject(name: TermName, earlydefns: Seq[Tree], parents: Seq[Tree], self: Tree, tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree], body: Seq[Tree]): Tree =
       q"""
          object $name extends { ..$earlydefns } with ..$parents { $self =>
-           ..${createCompanionMethods(tparams, tpname, stats)}
+           ..${createDelegatingMethods(tparams, tpname, stats)}
            ..$body
          }
        """
