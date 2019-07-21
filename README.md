@@ -2,9 +2,10 @@
 
 [![Build Status](https://travis-ci.org/DmytroMitin/AUXify.svg?branch=master)](https://travis-ci.org/DmytroMitin/AUXify)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.dmytromitin/auxify-macros/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.dmytromitin/auxify-macros)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.dmytromitin/auxify_2.13.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.dmytromitin%22%20AND%20a:%22auxify_2.13%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.dmytromitin/auxify-macros_2.13.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.dmytromitin%22%20AND%20a:%22auxify-macros_2.13%22)
 
 [sonatype](https://oss.sonatype.org/content/groups/public/com/github/dmytromitin/)
+[search.maven](https://search.maven.org/search?q=g:com.github.dmytromitin)
 [mvnrepository](https://mvnrepository.com/artifact/com.github.dmytromitin)
 
 ## Using
