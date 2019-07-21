@@ -5,7 +5,8 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.dmytromitin/auxify_2.13.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.dmytromitin%22%20AND%20a:%22auxify_2.13%22)
 
 [sonatype](https://oss.sonatype.org/content/groups/public/com/github/dmytromitin/)
-[maven](https://search.maven.org/artifact/com.github.dmytromitin/auxify_2.13/0.1/jar)
+[search.maven](https://search.maven.org/artifact/com.github.dmytromitin/auxify_2.13/0.1/jar)
+[mvnrepository](https://mvnrepository.com/artifact/com.github.dmytromitin)
 
 ## Using
 Write in `build.sbt`
