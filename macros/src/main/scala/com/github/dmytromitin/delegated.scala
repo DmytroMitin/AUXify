@@ -67,30 +67,24 @@ class DelegatedMacro(val c: whitebox.Context) extends Helpers {
       else {
         val last = paramss.last
         if (last.isEmpty) default
-        else {
-          last.head match {
-            case q"${mods: Modifiers} val $tname: $tpt = $expr" =>
-              if (mods hasFlag Flag.IMPLICIT) {
-                paramss.init :+ (last :+ implct)
-              }
-              else default
-          }
+        else last.head match {
+          case q"${mods: Modifiers} val $tname: $tpt = $expr" =>
+            if (mods hasFlag Flag.IMPLICIT)
+              paramss.init :+ (last :+ implct)
+            else default
         }
       }
     }
 
     def modifyStat(tparams: Seq[TypeDef], tpname: TypeName, typeNameSet: Set[TypeName]): PartialFunction[Tree, Tree] = {
-      val inst = TermName(c.freshName("inst"))
-
-      {
-        case q"${mods: Modifiers} def $tname[..$methodTparams](...$paramss): $tpt = ${`EmptyTree`}" =>
-          val tparams1 = modifyTparams(tparams)
-          val methodTparams1 = modifyTparams(methodTparams)
-          val paramNamess = modifyParamss(paramss)
-          val tpt1 = modifyType(tpt, typeNameSet, inst)
-          val implct = q"implicit val $inst: $tpname[..${tparams1._2}]"
-          q"${mods & ~Flag.DEFERRED} def $tname[..${tparams1._1 ++ methodTparams}](...${addImplicitToParamss(paramss, implct)}): $tpt1 = $inst.$tname[..${methodTparams1._2}](...$paramNamess)"
-      }
+      case q"${mods: Modifiers} def $tname[..$methodTparams](...$paramss): $tpt = ${`EmptyTree`}" =>
+        val inst = TermName(c.freshName("inst"))
+        val tparams1 = modifyTparams(tparams)
+        val methodTparams1 = modifyTparams(methodTparams)
+        val paramNamess = modifyParamss(paramss)
+        val tpt1 = modifyType(tpt, typeNameSet, inst)
+        val implct = q"implicit val $inst: $tpname[..${tparams1._2}]"
+        q"${mods & ~Flag.DEFERRED} def $tname[..${tparams1._1 ++ methodTparams}](...${addImplicitToParamss(paramss, implct)}): $tpt1 = $inst.$tname[..${methodTparams1._2}](...$paramNamess)"
     }
 
     def createDelegatingMethods(tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree]): Seq[Tree] = {

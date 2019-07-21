@@ -1,5 +1,161 @@
 package com.github.dmytromitin
 
-class syntax {
+import macrocompat.bundle
 
+import scala.annotation.{StaticAnnotation, compileTimeOnly}
+import scala.collection.mutable
+import scala.language.experimental.macros
+import scala.reflect.macros.whitebox
+
+@compileTimeOnly("enable macro paradise or -Ymacro-annotations")
+class syntax extends StaticAnnotation {
+  def macroTransform(annottees: Any*): Any = macro SyntaxMacro.impl
+}
+
+@bundle
+class SyntaxMacro(val c: whitebox.Context) extends Helpers {
+  import c.universe._
+
+  def impl(annottees: Tree*): Tree = {
+    def modifyName(name: TypeName): TypeName = name match {
+      case TypeName("_") => TypeName(c.freshName("tparam"))
+      case _ => name
+    }
+
+    def modifyTparam(tparam: Tree): (TypeDef, Tree) = {
+      tparam match {
+        case q"$mods type $name[..$tparams] >: $low <: $high" =>
+          val name1 = modifyName(name)
+          (
+            q"$mods type $name1[..$tparams] >: $low <: $high",
+            tq"$name1"
+          )
+      }
+    }
+
+    def modifyTparams(tparams: Seq[Tree]): (Seq[TypeDef], Seq[Tree]) = {
+      val res = tparams.map(modifyTparam(_))
+      (res.map(_._1), res.map(_._2))
+    }
+
+    def modifyParam(param: Tree): (Tree, Tree) = param match {
+      case q"$mods val $tname: $tpt = $expr" => (tpt, q"$tname")
+    }
+
+    def modifyParamss(paramss: Seq[Seq[Tree]]): (Seq[Seq[Tree]], Seq[Seq[Tree]]) = {
+      val res = paramss.map(_.map(modifyParam))
+      (res.map(_.map(_._1)), res.map(_.map(_._2)))
+    }
+
+    def createTypeNameSet(stats: Seq[Tree]): Set[TypeName] =
+      stats.collect {
+        case q"$mods type $name[..$tparams] >: $low <: $high" => name
+      }.toSet
+
+    def modifyType(tpt: Tree, typeNameSet: Set[TypeName], inst: TermName): Tree = {
+      val transformer = new Transformer {
+        override def transform(tree: Tree): Tree = tree match {
+          case tq"${name: TypeName}" => if (typeNameSet(name)) tq"$inst.$name" else tq"$name"
+          case _ => super.transform(tree)
+        }
+      }
+
+      transformer.transform(tpt)
+    }
+
+    def addImplicitToParamss(paramss: Seq[Seq[Tree]], implct: Tree): Seq[Seq[Tree]] = {
+      val default = paramss :+ Seq(implct)
+      if (paramss.isEmpty) default
+      else {
+        val last = paramss.last
+        if (last.isEmpty) default
+        else last.head match {
+          case q"${mods: Modifiers} val $tname: $tpt = $expr" =>
+            if (mods hasFlag Flag.IMPLICIT)
+              paramss.init :+ (last :+ implct)
+            else default
+        }
+      }
+    }
+
+    def modifyStat(tparams: Seq[TypeDef], tpname: TypeName, typeNameSet: Set[TypeName]): PartialFunction[Tree, Tree] = {
+      case q"${mods: Modifiers} def $tname[..$methodTparams](...$paramss): $tpt = ${`EmptyTree`}" if paramss.nonEmpty && paramss.head.nonEmpty =>
+        val inst = TermName(c.freshName("inst"))
+        val ops = TypeName(c.freshName("Ops"))
+
+        val tparams1 = modifyTparams(tparams)
+        val methodTparams1 = modifyTparams(methodTparams)
+        val paramNamess = modifyParamss(paramss)._2
+        val tpt1 = modifyType(tpt, typeNameSet, inst)
+        val implct = q"implicit val $inst: $tpname[..${tparams1._2}]"
+
+        val allTparams: Seq[Tree] = tparams1._1 ++ methodTparams
+        val firstParam: Tree = paramss.head.head
+        val restParamss: Seq[Seq[Tree]] = paramss.head.tail +: paramss.tail
+        val firstParamType: Tree = modifyParam(firstParam)._1
+
+        val firstParamTypeDependents: Set[TypeName] = {
+          val res = mutable.Set[TypeName]()
+
+          val traverser = new Traverser {
+            override def traverse(tree: Tree): Unit = tree match {
+              case tq"${name: TypeName}" => res += name
+              case _ => super.traverse(tree)
+            }
+          }
+
+          traverser.traverse(firstParamType)
+
+          res.toSet
+        }
+
+        def firstParamTypeDependsOn(tparam: Tree): Boolean = tparam match {
+          case q"$mods type $tpname[..$tparams] = $tpt" => firstParamTypeDependents.contains(tpname)
+        }
+
+        val (firstTparams: Seq[Tree], restTparams: Seq[Tree]) = allTparams.partition(firstParamTypeDependsOn)
+
+        q"""
+           implicit class $ops[..$firstTparams]($firstParam) {
+             ..${Seq(
+               q"${mods & ~Flag.DEFERRED} def $tname[..$restTparams](...${addImplicitToParamss(restParamss, implct)}): $tpt1 = $inst.$tname[..${methodTparams1._2}](...$paramNamess)"
+             )}
+           }
+         """
+
+    }
+
+    def createExtensionMethods(tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree]): Seq[Tree] = {
+      val typeNameSet = createTypeNameSet(stats)
+      stats.collect(modifyStat(tparams, tpname, typeNameSet))
+    }
+
+    def createObject(name: TermName, earlydefns: Seq[Tree], parents: Seq[Tree], self: Tree, tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree], body: Seq[Tree]): Tree =
+      q"""
+         object $name extends { ..$earlydefns } with ..$parents { $self =>
+           object syntax {
+             ..${createExtensionMethods(tparams, tpname, stats)}
+           }
+           ..$body
+         }
+       """
+
+    def createBlock(trt: Tree, name: TermName, earlydefns: Seq[Tree], parents: Seq[Tree], self: Tree, tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree], body: Seq[Tree]): Tree =
+      q"""
+          $trt
+          ${createObject(name, earlydefns, parents, self, tparams, tpname, stats, body)}
+        """
+
+    annottees match {
+      case (trt @ q"$mods1 trait $tpname[..$tparams] extends { ..$earlydefns1 } with ..$parents1 { $self1 => ..$stats }") ::
+        q"$mods object $tname extends { ..$earlydefns } with ..$parents { $self => ..$body }" :: Nil =>
+        createBlock(trt, tname, earlydefns, parents, self, tparams, tpname, stats, body)
+
+      case (trt @ q"$mods1 trait $tpname[..$tparams] extends { ..$earlydefns1 } with ..$parents1 { $self1 => ..$stats }") :: Nil =>
+        createBlock(trt, tpname.toTermName, Seq(), Seq(tq"_root_.scala.AnyRef"), q"val ${TermName(c.freshName("self"))} = $EmptyTree", tparams, tpname, stats, Seq())
+
+      case _ => c.abort(c.enclosingPosition, "not trait")
+    }
+
+  }
 }

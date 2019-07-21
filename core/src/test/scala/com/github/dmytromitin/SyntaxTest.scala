@@ -2,7 +2,7 @@ package com.github.dmytromitin
 
 import org.scalatest._
 
-class DelegatedTest extends FlatSpec with Matchers {
+class SyntaxTest extends FlatSpec with Matchers {
   sealed trait Nat
   case object _0 extends Nat
   type _0 = _0.type
@@ -20,7 +20,7 @@ class DelegatedTest extends FlatSpec with Matchers {
   val _4: _4 = Succ(_3)
   val _5: _5 = Succ(_4)
 
-  @delegated
+  @syntax
   trait Add[N <: Nat, M <: Nat] {
     type Out <: Nat
     def apply(n: N, m: M): Out
@@ -33,17 +33,15 @@ class DelegatedTest extends FlatSpec with Matchers {
       override def apply(n: N, m: M): Out = f(n, m)
     }
 
-//    def apply[N <: Nat, M <: Nat](n: N, m: M)(implicit inst: Add[N, M]): inst.Out = inst.apply(n, m)
-
     implicit def zeroAdd[M <: Nat]: Aux[_0, M, M] = instance((_, m) => m)
     implicit def succAdd[N <: Nat, M <: Nat, N_addM <: Nat](implicit add: Aux[N, M, N_addM]): Aux[Succ[N], M, Succ[N_addM]] =
       instance((succN, m) => Succ(add(succN.n, m)))
   }
 
-  implicitly[Add.Aux[_2, _3, _5]]
+  import Add.syntax._
 
   "2 + 3" should "be 5" in {
-    Add(_2, _3) should be (_5)
+    _2.apply(_3) should be (_5)
   }
 
 }
