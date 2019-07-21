@@ -62,22 +62,18 @@ class DelegatedMacro(val c: whitebox.Context) extends Helpers {
     }
 
     def addImplicitToParamss(paramss: Seq[Seq[Tree]], implct: Tree): Seq[Seq[Tree]] = {
-      println("paramss.isEmpty="+ paramss.isEmpty)
-      if (paramss.isEmpty) paramss :+ Seq(implct)
+      val default = paramss :+ Seq(implct)
+      if (paramss.isEmpty) default
       else {
         val last = paramss.last
-        println("last.isEmpty="+last.isEmpty)
-        if (last.isEmpty) paramss :+ Seq(implct)
+        if (last.isEmpty) default
         else {
           last.head match {
             case q"${mods: Modifiers} val $tname: $tpt = $expr" =>
-              println("mods hasFlag Flag.IMPLICIT="+(mods hasFlag Flag.IMPLICIT))
               if (mods hasFlag Flag.IMPLICIT) {
-                val res = paramss.init :+ (last :+ implct)
-                println("res="+res)
-                res
+                paramss.init :+ (last :+ implct)
               }
-              else paramss :+ Seq(implct)
+              else default
           }
         }
       }
