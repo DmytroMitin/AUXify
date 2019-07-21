@@ -4,44 +4,38 @@ lazy val scala211 = "2.11.12"
 lazy val scala210 = "2.10.7"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211, scala210)
 
-ThisBuild / name         := "auxify"
-ThisBuild / organization := "com.github.dmytromitin"
-ThisBuild / organizationName := "Dmytro Mitin"
-ThisBuild / organizationHomepage := Some(url("https://github.com/DmytroMitin"))
-ThisBuild / version      := "0.2"
-ThisBuild / scalaVersion := scala213
-
-ThisBuild / scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/DmytroMitin/AUXify"),
-    "https://github.com/DmytroMitin/AUXify.git"
-  )
-)
-ThisBuild / developers := List(
-  Developer(
-    id    = "DmytroMitin",
-    name  = "Dmytro Mitin",
+inThisBuild(Seq(
+  name                 := "auxify",
+  organization         := "com.github.dmytromitin",
+  organizationName     := "Dmytro Mitin",
+  organizationHomepage := Some(url("https://github.com/DmytroMitin")),
+  version              := "0.2",
+  scalaVersion         := scala213,
+  scmInfo := Some(ScmInfo(
+      url("https://github.com/DmytroMitin/AUXify"),
+      "https://github.com/DmytroMitin/AUXify.git"
+  )),
+  developers := List(Developer(
+    id = "DmytroMitin",
+    name = "Dmytro Mitin",
     email = "dmitin3@gmail.com",
-    url   = url("https://github.com/DmytroMitin")
-  )
-)
+    url = url("https://github.com/DmytroMitin")
+  )),
+  description := "Library providing macro annotations @Aux, @This, @instance, @apply, @delegated, @syntax",
+  licenses := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt")),
+  homepage := Some(url("https://github.com/DmytroMitin/AUXify")),
+  // Remove all additional repository other than Maven Central from POM
+  pomIncludeRepository := { _ => false },
+  publishMavenStyle := true,
+  useGpg := true,
+  credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential"),
+))
 
-ThisBuild / description := "Library providing macro annotations @Aux, @This, @instance, @apply, @delegated, @syntax"
-ThisBuild / licenses := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
-ThisBuild / homepage := Some(url("https://github.com/DmytroMitin/AUXify"))
-
-// Remove all additional repository other than Maven Central from POM
-ThisBuild / pomIncludeRepository := { _ => false }
 ThisBuild / publishTo := {
   val nexus = "https://oss.sonatype.org/"
   if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
-ThisBuild / publishMavenStyle := true
-
-ThisBuild / useGpg := true
-
-ThisBuild / credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
 
 lazy val root = (project in file("."))
   .aggregate(macros, core)
