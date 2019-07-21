@@ -11,8 +11,12 @@ class DelegatedShowTest extends FlatSpec with Matchers {
   object Show {
 //    def show[A](a: A)(implicit inst: Show[A]): String = inst.show(a)
 
-    implicit val str: Show[String] = identity[String]
-    implicit val int: Show[Int] = _.toString
+    implicit val str: Show[String] = new Show[String] {
+      override def show(a: String): String = a
+    }
+    implicit val int: Show[Int] = new Show[Int] {
+      override def show(a: Int): String = a.toString
+    }
   }
 
   "strings" should "work" in {

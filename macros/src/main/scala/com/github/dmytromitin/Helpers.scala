@@ -1,7 +1,9 @@
 package com.github.dmytromitin
 
+import macrocompat.bundle
 import scala.reflect.macros.whitebox
 
+@bundle
 trait Helpers {
   val c: whitebox.Context
 
