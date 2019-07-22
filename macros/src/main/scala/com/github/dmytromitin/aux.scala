@@ -6,50 +6,15 @@ import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
 @compileTimeOnly("enable macro paradise or -Ymacro-annotations")
-class Aux extends StaticAnnotation {
+class aux extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro AuxMacro.impl
 }
 
 @bundle
-class AuxMacro(val c: whitebox.Context) {
+class AuxMacro(val c: whitebox.Context) extends Helpers {
   import c.universe._
 
   def impl(annottees: Tree*): Tree = {
-    def modifyName(name: TypeName): TypeName = name match {
-      case TypeName("_") => TypeName(c.freshName("tparam"))
-      case _ => name
-    }
-
-    def modifyTparam(tparam: Tree): (TypeDef, Tree) = {
-      tparam match {
-        case q"$mods type $name[..$tparams] >: $low <: $high" =>
-          val name1 = modifyName(name)
-          (
-            q"$mods type $name1[..$tparams] >: $low <: $high",
-            tq"$name1"
-          )
-      }
-    }
-
-    def modifyTparams(tparams: Seq[Tree]): (Seq[TypeDef], Seq[Tree]) = {
-      val res = tparams.map(modifyTparam(_))
-      (res.map(_._1), res.map(_._2))
-    }
-
-    def extractTyps(stats: Seq[Tree]): (Seq[TypeDef], Seq[TypeDef]) = {
-      val typs = stats.collect {
-        case q"$mods type $name[..$tparams] >: $low <: $high" =>
-          val name0 = TypeName(c.freshName(name.toString + "0"))
-          val modifiedTparams = modifyTparams(tparams)
-          (
-            q"${Modifiers(Flag.PARAM)} type $name0[..$tparams] >: $low <: $high",
-            q"${Modifiers()} type $name[..${modifiedTparams._1}] = $name0[..${modifiedTparams._2}]"
-          )
-      }
-
-      (typs.map(_._1), typs.map(_._2))
-    }
-
     def createAux(tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree]): Tree = {
       val (tparams1, typs) = extractTyps(stats)
       val tparams2 = modifyTparams(tparams)._2

@@ -20,7 +20,7 @@ class AuxTest extends FlatSpec with Matchers {
   val _4: _4 = Succ(_3)
   val _5: _5 = Succ(_4)
 
-  @Aux
+  @aux
   trait Add[N <: Nat, M <: Nat] {
     type Out <: Nat
     def apply(n: N, m: M): Out

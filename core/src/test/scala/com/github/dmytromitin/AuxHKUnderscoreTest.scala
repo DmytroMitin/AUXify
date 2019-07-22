@@ -15,7 +15,7 @@ class AuxHKUnderscoreTest extends FlatSpec with Matchers {
   type _4 = Succ[_3]
   type _5 = Succ[_4]
 
-  @Aux
+  @aux
   trait Add[N <: Nat] {
     type Out[_ <: Nat] <: Nat
   }

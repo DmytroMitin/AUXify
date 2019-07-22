@@ -20,14 +20,13 @@ class AuxNoTypeTest extends FlatSpec with Matchers {
   val _4: _4 = Succ(_3)
   val _5: _5 = Succ(_4)
 
-  @Aux
+  @aux
   trait Add[N <: Nat, M <: Nat]
 
   object Add {
-//    type Aux[N <: Nat, M <: Nat] = Add[N, M]
-    def instance[N <: Nat, M <: Nat]: Aux[N, M] = new Aux[N, M] {}
+    def instance[N <: Nat, M <: Nat]: Add[N, M] = new Add[N, M] {}
 
-    implicit def mkAdd[N <: Nat, M <: Nat]: Aux[N, M] = instance
+    implicit def mkAdd[N <: Nat, M <: Nat]: Add[N, M] = instance
   }
 
   implicitly[Add.Aux[_2, _3]]

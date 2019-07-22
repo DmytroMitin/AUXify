@@ -20,7 +20,7 @@ class AuxInstanceTest2 extends FlatSpec with Matchers {
   val _4: _4 = Succ(_3)
   val _5: _5 = Succ(_4)
 
-  @Aux
+  @aux
   @instance
   trait Add[N <: Nat, M <: Nat] {
     type Out <: Nat

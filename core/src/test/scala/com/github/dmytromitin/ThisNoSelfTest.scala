@@ -4,19 +4,19 @@ import scala.language.higherKinds
 import org.scalatest._
 
 class ThisNoSelfTest extends FlatSpec with Matchers {
-  @This
+  @self
   sealed trait Nat { //self =>
-//    type This >: this.type <: Nat { type This = self.This }
-    type ++ = Succ[This]
+//    type Self >: this.type <: Nat { type Self = self.Self }
+    type ++ = Succ[Self]
     type +[M <: Nat] <: Nat
 
     def ++ : ++ = Succ(this)
     def +[M <: Nat](m: M): +[M]
   }
 
-  @This
+  @self
   case object _0 extends Nat {
-//    override type This = _0
+//    override type Self = _0
     override type +[M <: Nat] = M
 
     override def +[M <: Nat](m: M): +[M] = m
@@ -24,9 +24,9 @@ class ThisNoSelfTest extends FlatSpec with Matchers {
 
   type _0 = _0.type
 
-  @This
+  @self
   case class Succ[N <: Nat](n: N) extends Nat {
-//    override type This = Succ[N]
+//    override type Self = Succ[N]
     override type +[M <: Nat] = Succ[N# + [M]]
 
     override def +[M <: Nat](m: M): +[M] = Succ(n + m)

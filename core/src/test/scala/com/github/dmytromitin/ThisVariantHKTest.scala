@@ -3,19 +3,19 @@ package com.github.dmytromitin
 import org.scalatest._
 
 class ThisVariantHKTest extends FlatSpec with Matchers {
-  @This
+  @self
   sealed trait A[+X >: Null <: AnyRef, -Y] /*{ self =>
-    type This >: this.type <: A[X, Y] { type This = self.This }
+    type Self >: this.type <: A[X, Y] { type Self = self.Self }
   }*/
 
-  @This
+  @self
   class B[X >: Null <: AnyRef, Y] extends A[X, Y] {
-//    type This = B[X, Y]
+//    type Self = B[X, Y]
   }
 
-  @This
+  @self
   object C extends A[String, Nothing] {
-//    type This = C.type
+//    type Self = C.type
   }
 
 }

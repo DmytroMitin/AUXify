@@ -20,9 +20,9 @@ class ThisAuxTest extends FlatSpec with Matchers {
   val _4: _4 = Succ(_3)
   val _5: _5 = Succ(_4)
 
-  @This(lowerBound = false, fBound = false) @Aux
+  @self(lowerBound = false, fBound = false) @aux
   trait Add[N <: Nat, M <: Nat] { /*self =>*/
-//    type This /*>: this.type*/ <: Add[N, M] /*{ type This = self.This }*/
+//    type Self /*>: this.type*/ <: Add[N, M] /*{ type Self = self.Self }*/
     type Out <: Nat
     def apply(n: N, m: M): Out
   }
@@ -30,7 +30,7 @@ class ThisAuxTest extends FlatSpec with Matchers {
   object Add {
 //    type Aux[N <: Nat, M <: Nat, This0 <: Add[N, M], Out0 <: Nat] = Add[N, M] { type This = This0; type Out = Out0 }
     def instance[N <: Nat, M <: Nat, This0 <: Add[N, M], Out0 <: Nat](f: (N, M) => Out0): Aux[N, M, This0, Out0] = new Add[N, M] {
-      override type This = This0
+      override type Self = This0
       override type Out = Out0
       override def apply(n: N, m: M): Out = f(n, m)
     }
@@ -41,7 +41,7 @@ class ThisAuxTest extends FlatSpec with Matchers {
   }
 
   val add = implicitly[Add.Aux[_2, _3, Add[_2, _3], _5]]
-  implicitly[add.This =:= Add[_2, _3]]
+  implicitly[add.Self =:= Add[_2, _3]]
 
   "2 + 3" should "be 5" in {
     implicitly[Add[_2, _3]].apply(_2, _3) should be (_5)
