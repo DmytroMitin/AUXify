@@ -58,4 +58,13 @@ trait Helpers {
     (typs.map(_._1), typs.map(_._2))
   }
 
+  def modifyParam(param: Tree): (Tree, Tree) = param match {
+    case q"$mods val $tname: $tpt = $expr" => (tpt, q"$tname")
+  }
+
+  def modifyParamss(paramss: Seq[Seq[Tree]]): (Seq[Seq[Tree]], Seq[Seq[Tree]]) = {
+    val res = paramss.map(_.map(modifyParam))
+    (res.map(_.map(_._1)), res.map(_.map(_._2)))
+  }
+
 }
