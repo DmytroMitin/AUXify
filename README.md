@@ -181,7 +181,7 @@ trait Show[A] {
   def show(a: A): String
 }
 
-object Add {
+object Show {
   def show[A](a: A)(implicit inst: Show[A]): String = inst.show(a)
 }
 ```
