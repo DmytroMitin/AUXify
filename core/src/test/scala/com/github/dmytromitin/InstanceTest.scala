@@ -28,7 +28,7 @@ class InstanceTest extends FlatSpec with Matchers {
 
   object Add {
     type Aux[N <: Nat, M <: Nat, Out0 <: Nat] = Add[N, M] { type Out = Out0 }
-//    def instance[N <: Nat, M <: Nat, Out0 <: Nat](f: (N, M) => Out0): Aux[N, M, Out0] = new Add[N, M] {
+//    def instance[N <: Nat, M <: Nat, Out0 <: Nat](f: (N, M) => Out0): Add[N, M] { type Out = Out0 } = new Add[N, M] {
 //      override type Out = Out0
 //      override def apply(n: N, m: M): Out = f(n, m)
 //    }

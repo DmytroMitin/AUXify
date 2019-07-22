@@ -23,26 +23,26 @@ class InstanceMacro(val c: whitebox.Context) extends Helpers {
         case q"${mods: Modifiers} type $name[..$tparams] >: $low <: $high" =>
           val name0 = typeNameMap(name)
           val modifiedTparams = modifyTparams(tparams)
-          val stat = q"${mods & ~Flag.DEFERRED | Flag.OVERRIDE} type $name[..${modifiedTparams._1}] = $name0[..${modifiedTparams._2}]"
+          def mkStat(ms: Modifiers) = q"$ms type $name[..${modifiedTparams._1}] = $name0[..${modifiedTparams._2}]"
           (
             Some(q"${mods & ~Flag.DEFERRED | Flag.PARAM} type $name0[..$tparams] >: $low <: $high"),
-            Some(stat),
+            Some(mkStat(mods & ~Flag.DEFERRED)),
             None,
-            stat
+            mkStat(mods & ~Flag.DEFERRED | Flag.OVERRIDE)
           )
 
         case q"${mods: Modifiers} def $tname[..$tparams](...$paramss): $tpt = ${`EmptyTree`}" =>
           if (tparams.isEmpty) {
             val f = TermName(c.freshName("f"))
-            val (paramssTypess, paramssNamess) = modifyParamss(paramss)
-            val domain = paramssTypess.map(_.map(modifyType(_, typeNameMap)))
+            val (paramTypess, paramNamess) = modifyParamss(paramss)
+            val domain = paramTypess.map(_.map(modifyType(_, typeNameMap)))
             val codomain = modifyType(tpt, typeNameMap)
             val functionType = createFunctionType(domain, codomain)
             (
               None,
               None,
               Some(q"${mods & ~Flag.DEFERRED | Flag.PARAM} val $f: $functionType = $EmptyTree"),
-              q"${mods & ~Flag.DEFERRED | Flag.OVERRIDE} def $tname[..${Seq[Tree]()}](...$paramss): $tpt = $f(...$paramssNamess)"
+              q"${mods & ~Flag.DEFERRED | Flag.OVERRIDE} def $tname[..${Seq[Tree]()}](...$paramss): $tpt = $f(...$paramNamess)"
             )
           } else c.abort(c.enclosingPosition, "polymorphic method")
 
