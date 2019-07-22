@@ -74,10 +74,10 @@ trait Helpers {
   }
 
   def modifyType(tpt: Tree, typeNameMap: Map[TypeName, TypeName]): Tree =
-    modifyTypeWithTransformer(tpt, (name: TypeName) => tq"${typeNameMap.applyOrElse(name, identity[TypeName])}")
+    modifyTypeWithTransformer(tpt, name => tq"${typeNameMap.applyOrElse(name, identity[TypeName])}")
 
   def modifyType(tpt: Tree, typeNameSet: Set[TypeName], inst: TermName): Tree =
-    modifyTypeWithTransformer(tpt, (name: TypeName) => if (typeNameSet(name)) tq"$inst.$name" else tq"$name")
+    modifyTypeWithTransformer(tpt, name => if (typeNameSet(name)) tq"$inst.$name" else tq"$name")
 
   def modifyTypeWithTransformer(tpt: Tree, f: TypeName => Tree): Tree = {
     val transformer = new Transformer {
@@ -102,6 +102,33 @@ trait Helpers {
             paramss.init :+ (last :+ implct)
           else default
       }
+    }
+  }
+
+  def modifyAnnottees(annottees: Seq[Tree], f: (Seq[TypeDef], TypeName, Seq[Tree]) => Seq[Tree]): Tree = {
+    def createObject(name: TermName, earlydefns: Seq[Tree], parents: Seq[Tree], self: Tree, tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree], body: Seq[Tree]): Tree =
+      q"""
+         object $name extends { ..$earlydefns } with ..$parents { $self =>
+           ..${f(tparams, tpname, stats)}
+           ..$body
+         }
+       """
+
+    def createBlock(trt: Tree, name: TermName, earlydefns: Seq[Tree], parents: Seq[Tree], self: Tree, tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree], body: Seq[Tree]): Tree =
+      q"""
+          $trt
+          ${createObject(name, earlydefns, parents, self, tparams, tpname, stats, body)}
+        """
+
+    annottees match {
+      case (trt @ q"$mods1 trait $tpname[..$tparams] extends { ..$earlydefns1 } with ..$parents1 { $self1 => ..$stats }") ::
+        q"$mods object $tname extends { ..$earlydefns } with ..$parents { $self => ..$body }" :: Nil =>
+        createBlock(trt, tname, earlydefns, parents, self, tparams, tpname, stats, body)
+
+      case (trt @ q"$mods1 trait $tpname[..$tparams] extends { ..$earlydefns1 } with ..$parents1 { $self1 => ..$stats }") :: Nil =>
+        createBlock(trt, tpname.toTermName, Seq(), Seq(tq"_root_.scala.AnyRef"), q"val ${TermName(c.freshName("self"))} = $EmptyTree", tparams, tpname, stats, Seq())
+
+      case _ => c.abort(c.enclosingPosition, "not trait")
     }
   }
 
