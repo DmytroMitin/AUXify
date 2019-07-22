@@ -15,16 +15,8 @@ class ApplyMacro(val c: whitebox.Context) extends Helpers {
   import c.universe._
 
   def impl(annottees: Tree*): Tree = {
-    def extractTyps(stats: Seq[Tree]): Seq[TypeDef] = {
-      stats.collect {
-        case q"$mods type $name[..$tparams] >: $low <: $high" =>
-          val modifiedTparams = modifyTparams(tparams)
-          q"${Modifiers()} type $name[..${modifiedTparams._1}] = inst.$name[..${modifiedTparams._2}]"
-      }
-    }
-
     def createApply(tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree]): Tree = {
-      val typs = extractTyps(stats)
+      val typs = extractTyps(stats)._3
       val tparams2 = modifyTparams(tparams)._2
       q"def apply[..$tparams](implicit inst: $tpname[..$tparams2]): $tpname[..$tparams2] { ..$typs } = inst"
     }

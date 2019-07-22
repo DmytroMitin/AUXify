@@ -15,41 +15,6 @@ class DelegatedMacro(val c: whitebox.Context) extends Helpers {
   import c.universe._
 
   def impl(annottees: Tree*): Tree = {
-    def modifyName(name: TypeName): TypeName = name match {
-      case TypeName("_") => TypeName(c.freshName("tparam"))
-      case _ => name
-    }
-
-    def modifyTparam(tparam: Tree): (TypeDef, Tree) = {
-      tparam match {
-        case q"$mods type $name[..$tparams] >: $low <: $high" =>
-          val name1 = modifyName(name)
-          (
-            q"$mods type $name1[..$tparams] >: $low <: $high",
-            tq"$name1"
-          )
-      }
-    }
-
-    def modifyTparams(tparams: Seq[Tree]): (Seq[TypeDef], Seq[Tree]) = {
-      val res = tparams.map(modifyTparam(_))
-      (res.map(_._1), res.map(_._2))
-    }
-
-    def modifyParam(param: Tree): /*(Tree,*/ Tree/*)*/ = param match {
-      case q"$mods val $tname: $tpt = $expr" => /*(tpt,*/ q"$tname"/*)*/
-    }
-
-    def modifyParamss(paramss: Seq[Seq[Tree]]): /*(Seq[Seq[Tree]],*/ Seq[Seq[Tree]]/*)*/ = {
-      val res = paramss.map(_.map(modifyParam))
-      /*(res.map(_.map(_._1)),*/ res/*.map(_.map(_._2))*//*)*/
-    }
-
-    def createTypeNameSet(stats: Seq[Tree]): Set[TypeName] =
-      stats.collect {
-        case q"$mods type $name[..$tparams] >: $low <: $high" => name
-      }.toSet
-
     def modifyType(tpt: Tree, typeNameSet: Set[TypeName], inst: TermName): Tree = {
       val transformer = new Transformer {
         override def transform(tree: Tree): Tree = tree match {
@@ -81,7 +46,7 @@ class DelegatedMacro(val c: whitebox.Context) extends Helpers {
         val inst = TermName(c.freshName("inst"))
         val tparams1 = modifyTparams(tparams)
         val methodTparams1 = modifyTparams(methodTparams)
-        val paramNamess = modifyParamss(paramss)
+        val paramNamess = modifyParamss(paramss)._2
         val tpt1 = modifyType(tpt, typeNameSet, inst)
         val implct = q"implicit val $inst: $tpname[..${tparams1._2}]"
         q"${mods & ~Flag.DEFERRED} def $tname[..${tparams1._1 ++ methodTparams}](...${addImplicitToParamss(paramss, implct)}): $tpt1 = $inst.$tname[..${methodTparams1._2}](...$paramNamess)"

@@ -15,13 +15,6 @@ class InstanceMacro(val c: whitebox.Context) extends Helpers {
   import c.universe._
 
   def impl(annottees: Tree*): Tree = {
-    def createTypeNameMap(stats: Seq[Tree]): Map[TypeName, TypeName] =
-      stats.collect {
-        case q"$mods type $name[..$tparams] >: $low <: $high" =>
-          val name0 = TypeName(c.freshName(name.toString + "0"))
-          name -> name0
-      }.toMap
-
     def createFunctionType(paramss: Seq[Seq[Tree]], tpt: Tree): Tree =
       paramss.foldRight(tpt: Tree)((params: Seq[Tree], acc: Tree) => tq"(..$params) => $acc")
 
