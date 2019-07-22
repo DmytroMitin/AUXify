@@ -3,9 +3,9 @@ package com.github.dmytromitin
 import scala.language.higherKinds
 import org.scalatest._
 
-class ThisTest extends FlatSpec with Matchers {
+class SelfNoSelfTest extends FlatSpec with Matchers {
   @self
-  sealed trait Nat { self =>
+  sealed trait Nat { //self =>
 //    type Self >: this.type <: Nat { type Self = self.Self }
     type ++ = Succ[Self]
     type +[M <: Nat] <: Nat

@@ -2,7 +2,7 @@ package com.github.dmytromitin
 
 import org.scalatest._
 
-class ThisHKTest extends FlatSpec with Matchers {
+class SelfHKTest extends FlatSpec with Matchers {
   @self
   sealed trait A[X >: Null <: AnyRef, Y]
 

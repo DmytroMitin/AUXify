@@ -17,7 +17,7 @@ scalaVersion := "2.13.0"
 
 resolvers += Resolver.sonatypeRepo("releases")
 
-libraryDependencies += "com.github.dmytromitin" %% "auxify-macros" % "0.2"
+libraryDependencies += "com.github.dmytromitin" %% "auxify-macros" % "0.3"
 
 scalacOptions += "-Ymacro-annotations" // in Scala >= 2.13
 //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) // in Scala <= 2.12
@@ -68,7 +68,7 @@ case class Succ[N <: Nat](n: N) extends Nat
 into
 ```scala
 sealed trait Nat { self =>
-  type Self >: this.type <: Nat { type Self = self.Self }
+  type Self >: self.type <: Nat { type Self = self.Self }
   type ++ = Succ[Self]
 }
 
@@ -84,7 +84,7 @@ case class Succ[N <: Nat](n: N) extends Nat {
 ```
 Convenient for type-level programming.
 
-Generating lower bound `>: this.type` and/or F-bound `type Self = self.Self` for trait can be switched off
+Generating lower bound `>: self.type` and/or F-bound `type Self = self.Self` for trait can be switched off
 ```scala
 @self(lowerBound = false, fBound = false)
 ```

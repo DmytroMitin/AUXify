@@ -51,7 +51,7 @@ lazy val commonSettings = Seq(
       case Some((2, v)) if v >= 13 => Seq("-Ymacro-annotations")
       case _                       => Nil
     }) ++ Seq(
-//    "-Ymacro-debug-lite",
+    "-Ymacro-debug-lite",
 //    "-Ymacro-debug-verbose",
 //    "-Ydebug",
 //    "-Xprint:typer",

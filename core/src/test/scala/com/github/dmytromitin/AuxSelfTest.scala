@@ -2,7 +2,7 @@ package com.github.dmytromitin
 
 import org.scalatest._
 
-class AuxThisTest extends FlatSpec with Matchers {
+class AuxSelfTest extends FlatSpec with Matchers {
   sealed trait Nat
   case object _0 extends Nat
   type _0 = _0.type

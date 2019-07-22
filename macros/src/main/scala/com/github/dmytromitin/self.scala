@@ -38,7 +38,7 @@ class SelfMacro(val c: whitebox.Context) extends Helpers {
         val self2 = self1 match {
           case q"$mods val $selfName: $tpt = $expr" => selfName
         }
-        val lowerBound = if (isLowerBoundOn) tq"this.type" else tq"_root_.scala.Nothing"
+        val lowerBound = if (isLowerBoundOn) tq"$self2.type" else tq"_root_.scala.Nothing"
         val fBound = if (isFBoundOn) Seq(q"type Self = $self2.Self") else Seq[Tree]()
         q"""
             $mods trait $tpname[..$tparams] extends { ..$earlydefns } with ..$parents { $self1 =>
