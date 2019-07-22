@@ -44,15 +44,16 @@ trait Helpers {
     (res.map(_._1), res.map(_._2))
   }
 
-  def extractTyps(stats: Seq[Tree]): (Seq[TypeDef], Seq[TypeDef], Seq[TypeDef], Seq[(TypeName, TypeName)]) = {
+  def extractTypeMembers(stats: Seq[Tree]): (Seq[TypeDef], Seq[TypeDef], Seq[TypeDef], Seq[(TypeName, TypeName)]) = {
     val typs = stats.collect {
       case q"$mods type $name[..$tparams] >: $low <: $high" =>
         val name0 = TypeName(c.freshName(name.toString + "0"))
         val modifiedTparams = modifyTparams(tparams)
+        def mkTyp(t: Tree): TypeDef = q"${Modifiers()} type $name[..${modifiedTparams._1}] = $t[..${modifiedTparams._2}]"
         (
           q"${Modifiers(Flag.PARAM)} type $name0[..$tparams] >: $low <: $high",
-          q"${Modifiers()} type $name[..${modifiedTparams._1}] = $name0[..${modifiedTparams._2}]",
-          q"${Modifiers()} type $name[..${modifiedTparams._1}] = inst.$name[..${modifiedTparams._2}]",
+          mkTyp(tq"$name0"),
+          mkTyp(tq"inst.$name"),
           name -> name0
         )
     }
@@ -60,7 +61,7 @@ trait Helpers {
     (typs.map(_._1), typs.map(_._2), typs.map(_._3), typs.map(_._4))
   }
 
-  def createTypeNameMap(stats: Seq[Tree]): Map[TypeName, TypeName] = extractTyps(stats)._4.toMap
+  def createTypeNameMap(stats: Seq[Tree]): Map[TypeName, TypeName] = extractTypeMembers(stats)._4.toMap
 
   def createTypeNameSet(stats: Seq[Tree]): Set[TypeName] = createTypeNameMap(stats).keySet
 

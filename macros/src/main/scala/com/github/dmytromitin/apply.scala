@@ -16,7 +16,7 @@ class ApplyMacro(val c: whitebox.Context) extends Helpers {
 
   def impl(annottees: Tree*): Tree = {
     def createApply(tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree]): Tree = {
-      val typs = extractTyps(stats)._3
+      val typs = extractTypeMembers(stats)._3
       val tparams2 = modifyTparams(tparams)._2
       q"def apply[..$tparams](implicit inst: $tpname[..$tparams2]): $tpname[..$tparams2] { ..$typs } = inst"
     }
