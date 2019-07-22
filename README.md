@@ -23,10 +23,10 @@ scalacOptions += "-Ymacro-annotations" // in Scala >= 2.13
 //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) // in Scala <= 2.12
 ```
 
-## @Aux
+## @aux
 Transforms
 ```scala
-@Aux
+@aux
 trait Add[N <: Nat, M <: Nat] {
   type Out <: Nat
   def apply(n: N, m: M): Out
@@ -49,44 +49,44 @@ implicitly[Add.Aux[_2, _3, _5]]
 ```
 Convenient for type-level programming.
 
-## @This
+## @self
 Transforms
 ```scala
-@This
+@self
 sealed trait Nat {
   type ++ = Succ[This]
 }
 
-@This
+@self
 case object _0 extends Nat 
 
 type _0 = _0.type
 
-@This
+@self
 case class Succ[N <: Nat](n: N) extends Nat
 ```
 into
 ```scala
 sealed trait Nat { self =>
-  type This >: this.type <: Nat { type This = self.This }
-  type ++ = Succ[This]
+  type Self >: this.type <: Nat { type Self = self.Self }
+  type ++ = Succ[Self]
 }
 
 case object _0 extends Nat {
-  override type This = _0
+  override type Self = _0
 }
 
 type _0 = _0.type
 
 case class Succ[N <: Nat](n: N) extends Nat {
-  override type This = Succ[N]
+  override type Self = Succ[N]
 }
 ```
 Convenient for type-level programming.
 
-Generating lower bound `>: this.type` and/or F-bound `type This = self.This` for trait can be switched off
+Generating lower bound `>: this.type` and/or F-bound `type Self = self.Self` for trait can be switched off
 ```scala
-@This(lowerBound = false, fBound = false)
+@self(lowerBound = false, fBound = false)
 ```
 
 ## @instance (constructor)
