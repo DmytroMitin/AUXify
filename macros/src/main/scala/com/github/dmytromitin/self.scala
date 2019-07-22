@@ -11,7 +11,7 @@ class self(lowerBound: Boolean = true, fBound: Boolean = true) extends StaticAnn
 }
 
 @bundle
-class SelfMacro(val c: whitebox.Context) {
+class SelfMacro(val c: whitebox.Context) extends Helpers {
   import c.universe._
 
   def impl(annottees: Tree*): Tree = {
@@ -28,10 +28,6 @@ class SelfMacro(val c: whitebox.Context) {
       case _ => c.abort(c.enclosingPosition, "not boolean literal")
     }
 
-    def modifyTparams(tparams: Seq[Tree]): Seq[Tree] = tparams.map {
-      case q"$mods type $name[..$tparams] >: $lower <: $higher" => tq"$name"
-    }
-
     annottees match {
       case q"$mods trait $tpname[..$tparams] extends { ..$earlydefns } with ..$parents { $self => ..$stats }" :: tail =>
         val self1 = self match {
@@ -46,7 +42,7 @@ class SelfMacro(val c: whitebox.Context) {
         val fBound = if (isFBoundOn) Seq(q"type Self = $self2.Self") else Seq[Tree]()
         q"""
             $mods trait $tpname[..$tparams] extends { ..$earlydefns } with ..$parents { $self1 =>
-              type Self >: $lowerBound <: $tpname[..${modifyTparams(tparams)}] { ..$fBound }
+              type Self >: $lowerBound <: $tpname[..${modifyTparams(tparams)._2}] { ..$fBound }
               ..$stats
             }
 
@@ -56,7 +52,7 @@ class SelfMacro(val c: whitebox.Context) {
       case q"$mods class $tpname[..$tparams] $ctorMods(...$paramss) extends { ..$earlydefns } with ..$parents { $self => ..$stats }" :: tail =>
         q"""
             $mods class $tpname[..$tparams] $ctorMods(...$paramss) extends { ..$earlydefns } with ..$parents { $self =>
-              type Self = $tpname[..${modifyTparams(tparams)}]
+              type Self = $tpname[..${modifyTparams(tparams)._2}]
               ..$stats
             }
 

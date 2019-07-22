@@ -78,4 +78,21 @@ trait Helpers {
         name -> name0
     }.toMap
 
+  def modifyType(tpt: Tree, typeNameMap: Map[TypeName, TypeName]): Tree =
+    modifyTypeWithTransformer(tpt, (name: TypeName) => tq"${typeNameMap.applyOrElse(name, identity[TypeName])}")
+
+  def modifyType(tpt: Tree, typeNameSet: Set[TypeName], inst: TermName): Tree =
+    modifyTypeWithTransformer(tpt, (name: TypeName) => if (typeNameSet(name)) tq"$inst.$name" else tq"$name")
+
+  def modifyTypeWithTransformer(tpt: Tree, f: TypeName => Tree): Tree = {
+    val transformer = new Transformer {
+      override def transform(tree: Tree): Tree = tree match {
+        case tq"${name: TypeName}" => f(name)
+        case _ => super.transform(tree)
+      }
+    }
+
+    transformer.transform(tpt)
+  }
+
 }

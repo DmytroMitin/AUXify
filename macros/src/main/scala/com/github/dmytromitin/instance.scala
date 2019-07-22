@@ -18,17 +18,6 @@ class InstanceMacro(val c: whitebox.Context) extends Helpers {
     def createFunctionType(paramss: Seq[Seq[Tree]], tpt: Tree): Tree =
       paramss.foldRight(tpt: Tree)((params: Seq[Tree], acc: Tree) => tq"(..$params) => $acc")
 
-    def modifyType(tpt: Tree, typeNameMap: Map[TypeName, TypeName]): Tree = {
-      val transformer = new Transformer {
-        override def transform(tree: Tree): Tree = tree match {
-          case tq"${name: TypeName}" => tq"${typeNameMap.applyOrElse(name, identity[TypeName])}"
-          case _ => super.transform(tree)
-        }
-      }
-
-      transformer.transform(tpt)
-    }
-
     def modifyStats(stats: Seq[Tree], typeNameMap: Map[TypeName, TypeName]): (Seq[TypeDef], Seq[TypeDef], Seq[Tree], Seq[Tree]) = {
       val res: Seq[(Option[TypeDef], Option[TypeDef], Option[Tree], Tree)] = stats.map {
         case q"${mods: Modifiers} type $name[..$tparams] >: $low <: $high" =>

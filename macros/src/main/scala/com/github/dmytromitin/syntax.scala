@@ -52,17 +52,6 @@ class SyntaxMacro(val c: whitebox.Context) extends Helpers {
         case q"$mods type $name[..$tparams] >: $low <: $high" => name
       }.toSet
 
-    def modifyType(tpt: Tree, typeNameSet: Set[TypeName], inst: TermName): Tree = {
-      val transformer = new Transformer {
-        override def transform(tree: Tree): Tree = tree match {
-          case tq"${name: TypeName}" => if (typeNameSet(name)) tq"$inst.$name" else tq"$name"
-          case _ => super.transform(tree)
-        }
-      }
-
-      transformer.transform(tpt)
-    }
-
     def addImplicitToParamss(paramss: Seq[Seq[Tree]], implct: Tree): Seq[Seq[Tree]] = {
       val default = paramss :+ Seq(implct)
       if (paramss.isEmpty) default
