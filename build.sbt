@@ -21,7 +21,7 @@ inThisBuild(Seq(
     email = "dmitin3@gmail.com",
     url = url("https://github.com/DmytroMitin")
   )),
-  description := "Library providing macro annotations @Aux, @This, @instance, @apply, @delegated, @syntax",
+  description := "Library providing macro annotations @aux, @self, @instance, @apply, @delegated, @syntax",
   licenses := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt")),
   homepage := Some(url("https://github.com/DmytroMitin/AUXify")),
   // Remove all additional repository other than Maven Central from POM
@@ -51,7 +51,7 @@ lazy val commonSettings = Seq(
       case Some((2, v)) if v >= 13 => Seq("-Ymacro-annotations")
       case _                       => Nil
     }) ++ Seq(
-    "-Ymacro-debug-lite",
+//    "-Ymacro-debug-lite",
 //    "-Ymacro-debug-verbose",
 //    "-Ydebug",
 //    "-Xprint:typer",
