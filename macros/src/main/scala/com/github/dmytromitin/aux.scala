@@ -16,7 +16,7 @@ class AuxMacro(val c: whitebox.Context) extends Helpers {
 
   def impl(annottees: Tree*): Tree = {
     def createAux(tparams: Seq[TypeDef], tpname: TypeName, stats: Seq[Tree]): Tree = {
-      val (tparams1, typs, _) = extractTyps(stats)
+      val (tparams1, typs, _, _) = extractTyps(stats)
       val tparams2 = modifyTparams(tparams)._2
       q"type Aux[..${tparams ++ tparams1}] = $tpname[..$tparams2] { ..$typs }"
     }
