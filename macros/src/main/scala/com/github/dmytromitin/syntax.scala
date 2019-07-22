@@ -17,56 +17,6 @@ class SyntaxMacro(val c: whitebox.Context) extends Helpers {
   import c.universe._
 
   def impl(annottees: Tree*): Tree = {
-    def modifyName(name: TypeName): TypeName = name match {
-      case TypeName("_") => TypeName(c.freshName("tparam"))
-      case _ => name
-    }
-
-    def modifyTparam(tparam: Tree): (TypeDef, Tree) = {
-      tparam match {
-        case q"$mods type $name[..$tparams] >: $low <: $high" =>
-          val name1 = modifyName(name)
-          (
-            q"$mods type $name1[..$tparams] >: $low <: $high",
-            tq"$name1"
-          )
-      }
-    }
-
-    def modifyTparams(tparams: Seq[Tree]): (Seq[TypeDef], Seq[Tree]) = {
-      val res = tparams.map(modifyTparam(_))
-      (res.map(_._1), res.map(_._2))
-    }
-
-    def modifyParam(param: Tree): (Tree, Tree) = param match {
-      case q"$mods val $tname: $tpt = $expr" => (tpt, q"$tname")
-    }
-
-    def modifyParamss(paramss: Seq[Seq[Tree]]): (Seq[Seq[Tree]], Seq[Seq[Tree]]) = {
-      val res = paramss.map(_.map(modifyParam))
-      (res.map(_.map(_._1)), res.map(_.map(_._2)))
-    }
-
-    def createTypeNameSet(stats: Seq[Tree]): Set[TypeName] =
-      stats.collect {
-        case q"$mods type $name[..$tparams] >: $low <: $high" => name
-      }.toSet
-
-    def addImplicitToParamss(paramss: Seq[Seq[Tree]], implct: Tree): Seq[Seq[Tree]] = {
-      val default = paramss :+ Seq(implct)
-      if (paramss.isEmpty) default
-      else {
-        val last = paramss.last
-        if (last.isEmpty) default
-        else last.head match {
-          case q"${mods: Modifiers} val $tname: $tpt = $expr" =>
-            if (mods hasFlag Flag.IMPLICIT)
-              paramss.init :+ (last :+ implct)
-            else default
-        }
-      }
-    }
-
     def modifyStat(tparams: Seq[TypeDef], tpname: TypeName, typeNameSet: Set[TypeName]): PartialFunction[Tree, Tree] = {
       case q"${mods: Modifiers} def $tname[..$methodTparams](...$paramss): $tpt = ${`EmptyTree`}" if paramss.nonEmpty && paramss.head.nonEmpty =>
         val inst = TermName(c.freshName("inst"))

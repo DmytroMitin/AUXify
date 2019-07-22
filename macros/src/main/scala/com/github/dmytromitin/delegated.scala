@@ -15,21 +15,6 @@ class DelegatedMacro(val c: whitebox.Context) extends Helpers {
   import c.universe._
 
   def impl(annottees: Tree*): Tree = {
-    def addImplicitToParamss(paramss: Seq[Seq[Tree]], implct: Tree): Seq[Seq[Tree]] = {
-      val default = paramss :+ Seq(implct)
-      if (paramss.isEmpty) default
-      else {
-        val last = paramss.last
-        if (last.isEmpty) default
-        else last.head match {
-          case q"${mods: Modifiers} val $tname: $tpt = $expr" =>
-            if (mods hasFlag Flag.IMPLICIT)
-              paramss.init :+ (last :+ implct)
-            else default
-        }
-      }
-    }
-
     def modifyStat(tparams: Seq[TypeDef], tpname: TypeName, typeNameSet: Set[TypeName]): PartialFunction[Tree, Tree] = {
       case q"${mods: Modifiers} def $tname[..$methodTparams](...$paramss): $tpt = ${`EmptyTree`}" =>
         val inst = TermName(c.freshName("inst"))

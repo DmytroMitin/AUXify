@@ -90,4 +90,19 @@ trait Helpers {
     transformer.transform(tpt)
   }
 
+  def addImplicitToParamss(paramss: Seq[Seq[Tree]], implct: Tree): Seq[Seq[Tree]] = {
+    val default = paramss :+ Seq(implct)
+    if (paramss.isEmpty) default
+    else {
+      val last = paramss.last
+      if (last.isEmpty) default
+      else last.head match {
+        case q"${mods: Modifiers} val $tname: $tpt = $expr" =>
+          if (mods hasFlag Flag.IMPLICIT)
+            paramss.init :+ (last :+ implct)
+          else default
+      }
+    }
+  }
+
 }
