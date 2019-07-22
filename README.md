@@ -54,7 +54,7 @@ Transforms
 ```scala
 @self
 sealed trait Nat {
-  type ++ = Succ[This]
+  type ++ = Succ[Self]
 }
 
 @self
