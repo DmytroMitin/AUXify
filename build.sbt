@@ -9,7 +9,7 @@ inThisBuild(Seq(
   organization         := "com.github.dmytromitin",
   organizationName     := "Dmytro Mitin",
   organizationHomepage := Some(url("https://github.com/DmytroMitin")),
-  version              := "0.2",
+  version              := "0.3",
   scalaVersion         := scala213,
   scmInfo := Some(ScmInfo(
       url("https://github.com/DmytroMitin/AUXify"),
