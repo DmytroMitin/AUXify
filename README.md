@@ -2,8 +2,8 @@
 
 [![Build Status](https://travis-ci.org/DmytroMitin/AUXify.svg?branch=master)](https://travis-ci.org/DmytroMitin/AUXify)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.dmytromitin/auxify-macros_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.dmytromitin/auxify-macros_2.13)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.dmytromitin/auxify-macros_2.13.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.dmytromitin%22%20AND%20a:%22auxify-macros_2.13%22)
-[![Sonatype Snapshots](https://img.shields.io/nexus/r/https/oss.sonatype.org/com.github.dmytromitin/auxify-macros_2.13.svg)](https://oss.sonatype.org/content/groups/public/com/github/dmytromitin/auxify-macros_2.13/)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.dmytromitin/auxify-macros_2.13.svg?label=maven%20central&color=success)](https://search.maven.org/search?q=g:%22com.github.dmytromitin%22%20AND%20a:%22auxify-macros_2.13%22)
+[![Sonatype Snapshots](https://img.shields.io/nexus/r/https/oss.sonatype.org/com.github.dmytromitin/auxify-macros_2.13.svg?color=success)](https://oss.sonatype.org/content/groups/public/com/github/dmytromitin/auxify-macros_2.13/)
 
 [mvnrepository](https://mvnrepository.com/artifact/com.github.dmytromitin)
 
