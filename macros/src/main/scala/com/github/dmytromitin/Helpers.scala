@@ -44,7 +44,7 @@ trait Helpers {
     (res.map(_._1), res.map(_._2))
   }
 
-  def modifyDef(mods: Modifiers, name: TypeName, tparams: Seq[TypeDef], low: Tree, high: Tree): (TypeDef, TypeDef, TypeDef, (TypeName, TypeName)) = {
+  def modifyTypeDef(mods: Modifiers, name: TypeName, tparams: Seq[TypeDef], low: Tree, high: Tree): (TypeDef, TypeDef, TypeDef, (TypeName, TypeName)) = {
     val name0 = TypeName(c.freshName(name.toString + "0"))
     val modifiedTparams = modifyTparams(tparams)
     def mkTyp(t: Tree) = q"${mods & ~Flag.DEFERRED} type $name[..${modifiedTparams._1}] = $t[..${modifiedTparams._2}]"
@@ -58,7 +58,7 @@ trait Helpers {
 
   def modifyStat: PartialFunction[Tree, (TypeDef, TypeDef, TypeDef, (TypeName, TypeName))] = {
     case q"${mods: Modifiers} type $name[..$tparams] >: $low <: $high" =>
-      modifyDef(mods, name, tparams, low, high)
+      modifyTypeDef(mods, name, tparams, low, high)
   }
 
   def extractTypeMembers(stats: Seq[Tree]): (Seq[TypeDef], Seq[TypeDef], Seq[TypeDef], Seq[(TypeName, TypeName)]) = {
