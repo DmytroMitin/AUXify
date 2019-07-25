@@ -4,6 +4,7 @@ import org.scalatest._
 
 import scala.language.higherKinds
 
+@Ignore
 class AuxTest1 extends FlatSpec with Matchers {
 
   // TODO #9
