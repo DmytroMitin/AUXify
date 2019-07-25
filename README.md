@@ -23,9 +23,77 @@ scalacOptions += "-Ymacro-annotations" // in Scala >= 2.13
 //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) // in Scala <= 2.12
 ```
 ## Using AUXify-Meta
-For code generation with Scalameta + SemanticDB + Scalafix write in `build.sbt`
+For code generation with Scalameta + SemanticDB + Scalafix write in `plugins.sbt`
+```sbtshell
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
+```
+and in `build.sbt`
+```sbtshell
+lazy val auxifyV = "0.4"
+lazy val auxifyMeta = "com.github.dmytromitin" %% "auxify-meta" % auxifyV
+lazy val auxifyMetaCore = "com.github.dmytromitin" %% "auxify-meta-core" % auxifyV
 
-For using rewriting rules with Scalameta + SemanticDB + Scalafix write in `build.sbt`
+import com.geirsson.coursiersmall.{Repository => R}
+scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/")
+scalafixDependencies in ThisBuild += auxifyMeta
+
+lazy val V = _root_.scalafix.sbt.BuildInfo
+
+inThisBuild(
+  List(
+    scalaVersion := V.scala212,
+    addCompilerPlugin(scalafixSemanticdb),
+    scalacOptions ++= List(
+      "-Yrangepos"
+    )
+  )
+)
+
+lazy val rules = project
+  .settings(
+    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % V.scalafixVersion
+  )
+
+lazy val in = project
+  .settings(
+    libraryDependencies += auxifyMetaCore
+  )
+
+lazy val out = project
+  .settings(
+    sourceGenerators.in(Compile) += Def.taskDyn {
+      val root = baseDirectory.in(ThisBuild).value.toURI.toString
+      val from = sourceDirectory.in(in, Compile).value
+      val to = sourceManaged.in(Compile).value
+      val outFrom = from.toURI.toString.stripSuffix("/").stripPrefix(root)
+      val outTo = to.toURI.toString.stripSuffix("/").stripPrefix(root)
+      Def.task {
+        scalafix
+          .in(in, Compile)
+          .toTask(s" AuxRule --out-from=$outFrom --out-to=$outTo")
+          .value
+        (to ** "*.scala").get
+      }
+    }.taskValue,
+    libraryDependencies += auxifyMetaCore
+  )
+```
+Then do `sbt out/compile`.
+
+Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
+
+For using rewriting rules with Scalameta + SemanticDB + Scalafix write in `build.sbt` obtained after `sbt new scalacenter/scalafix.g8 --repo="Repository Name"`)
+```sbtshell
+lazy val auxifyMeta = "com.github.dmytromitin" %% "auxify-meta" % "0.4"
+import com.geirsson.coursiersmall.{Repository => R}
+scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/")
+scalafixDependencies in ThisBuild += auxifyMeta
+libraryDependencies in ThisBuild += auxifyMeta
+```
+
+Then do `sbt tests/test` (details are [here](https://scalacenter.github.io/scalafix/docs/developers/setup.html)).
+
+Example project is [here](https://github.com/DmytroMitin/scalafix-demo).
 
 Currently only @aux is implemented as Scalafix (semantic) rewriting rule.
 

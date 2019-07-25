@@ -102,7 +102,6 @@ lazy val metaCore = (project in file("meta-core"))
   .settings(
     name := "auxify-meta-core",
     libraryDependencies ++= Seq(),
-    publish / skip := true,
     metaCommonSettings
   )
 
@@ -153,7 +152,7 @@ lazy val metaOutExpectedForTests = (project in file("meta-out-expected-for-tests
     metaCommonSettings
   )
 
-// file in meta/src/main/resources/META-INF/services and top comment 
+// file in meta/src/main/resources/META-INF/services and top comment
 // in meta-in/src/main/scala/[package]/[input file] are necessary for tests
 lazy val metaTests = (project in file("meta-tests"))
   .dependsOn(metaCore, metaRules)
