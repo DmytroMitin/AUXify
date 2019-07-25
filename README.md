@@ -239,13 +239,13 @@ Inheritance of type classes is not supported (anyway it's [broken](https://typel
 
 ## Using AUXify-Meta
 
-Currently only @aux is implemented as Scalafix (semantic) rewriting rule.
+Currently only @aux is implemented (as Scalafix semantic rewriting rule).
 
 Meta annotation @aux works only with classes on contrary to macro annotation @aux working only with traits. 
 [This will be fixed.](https://github.com/DmytroMitin/AUXify/issues/10) 
 
 ### Code generation
-For code generation with Scalameta + SemanticDB + Scalafix write in `project/plugins.sbt`
+For code generation with [Scalameta](https://scalameta.org/) + [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) + [Scalafix](https://scalacenter.github.io/scalafix/) write in `project/plugins.sbt`
 ```scala
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
 ```
@@ -301,7 +301,7 @@ Annotated code should be placed in `in/src/main/scala`. Code generation in `out/
 Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
 
 ### Rewriting
-For using rewriting rules with Scalameta + SemanticDB + Scalafix write in `project/plugins.sbt`
+For using rewriting rules with [Scalameta](https://scalameta.org/) + [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) + [Scalafix](https://scalacenter.github.io/scalafix/) write in `project/plugins.sbt`
 ```scala
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
 ```
