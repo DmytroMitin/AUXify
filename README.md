@@ -8,6 +8,18 @@
 [mvnrepository](https://mvnrepository.com/artifact/com.github.dmytromitin)
 [repo1.maven](https://repo1.maven.org/maven2/com/github/dmytromitin/)
 
+##Contents
+- [Using AUXify-Macros](#using-auxify-macros)
+  * [@aux](#-aux)
+  * [@self](#-self)
+  * [@instance (constructor)](#-instance--constructor-)
+  * [@apply (materializer)](#-apply--materializer-)
+  * [@delegated](#-delegated)
+  * [@syntax](#-syntax)
+- [Using AUXify-Meta](#using-auxify-meta)
+  + [Code generation](#code-generation)
+  + [Rewriting](#rewriting)
+
 ## Using AUXify-Macros
 Write in `build.sbt`
 ```scala
