@@ -246,11 +246,11 @@ Meta annotation @aux works only with classes on contrary to macro annotation @au
 
 ### Code generation
 For code generation with Scalameta + SemanticDB + Scalafix write in `project/plugins.sbt`
-```sbtshell
+```scala
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
 ```
 and in `build.sbt`
-```sbtshell
+```scala
 import com.geirsson.coursiersmall.{Repository => R}
 
 lazy val V = _root_.scalafix.sbt.BuildInfo
@@ -302,11 +302,11 @@ Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
 
 ### Rewriting
 For using rewriting rules with Scalameta + SemanticDB + Scalafix write write in `project/plugins.sbt`
-```sbtshell
+```scala
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
 ```
 and in `build.sbt`
-```sbtshell
+```scala
 // on the top
 import com.geirsson.coursiersmall.{Repository => R}
 scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/")
