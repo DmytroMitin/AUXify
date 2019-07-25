@@ -20,7 +20,7 @@ ThisBuild / developers := List(Developer(
   email = "dmitin3@gmail.com",
   url = url("https://github.com/DmytroMitin")
 ))
-ThisBuild / description := "Library providing macro annotations @aux, @self, @instance, @apply, @delegated, @syntax"
+ThisBuild / description := "Library providing macro/meta annotations @aux, @self, @instance, @apply, @delegated, @syntax"
 ThisBuild / licenses := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / homepage := Some(url("https://github.com/DmytroMitin/AUXify"))
   // Remove all additional repository other than Maven Central from POM
