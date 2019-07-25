@@ -8,7 +8,7 @@ ThisBuild / name                 := "auxify"
 ThisBuild / organization         := "com.github.dmytromitin"
 ThisBuild / organizationName     := "Dmytro Mitin"
 ThisBuild / organizationHomepage := Some(url("https://github.com/DmytroMitin"))
-ThisBuild / version              := "0.4"
+ThisBuild / version              := "0.5"
 ThisBuild / scalaVersion         := scala213
 ThisBuild / scmInfo := Some(ScmInfo(
   url("https://github.com/DmytroMitin/AUXify"),
@@ -106,7 +106,6 @@ lazy val metaCore = (project in file("meta-core"))
   )
 
 lazy val metaRules = (project in file("meta"))
-  .dependsOn(metaCore)
   .settings(
     name := "auxify-meta",
     libraryDependencies ++= Seq(
@@ -145,8 +144,9 @@ lazy val metaOut = (project in file("meta-out"))
     metaCommonSettings
   )
 
-lazy val metaOutExpectedForTests = (project in file("meta-out-expected-for-tests")).
-  settings(
+lazy val metaOutExpectedForTests = (project in file("meta-out-expected-for-tests"))
+  .dependsOn(metaCore)
+  .settings(
     name := "auxify-out-expected-for-tests",
     skip in publish := true,
     metaCommonSettings
@@ -155,7 +155,7 @@ lazy val metaOutExpectedForTests = (project in file("meta-out-expected-for-tests
 // file meta/src/main/resources/META-INF/services/scalafix.v1.Rule and top comment
 // in meta-in/src/main/scala/[package]/[input file].scala are necessary for tests
 lazy val metaTests = (project in file("meta-tests"))
-  .dependsOn(metaCore, metaRules)
+  .dependsOn(metaRules)
   .settings(
     name := "auxify-meta-tests",
     skip in publish := true,
