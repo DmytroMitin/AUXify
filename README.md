@@ -240,6 +240,8 @@ Inheritance of type classes is not supported (anyway it's [broken](https://typel
 ## Using AUXify-Meta
 
 Currently only @aux is implemented as Scalafix (semantic) rewriting rule.
+Meta annotation @aux works only with classes on contrary to meta annotation @aux working only with traits. 
+This will be fixed. #10
 
 ### Code generation
 For code generation with Scalameta + SemanticDB + Scalafix write in `project/plugins.sbt`
@@ -295,7 +297,7 @@ lazy val out = project
 ```
 Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.12/src_managed/main/scala/` can be run with `sbt out/compile`.
 
-Example projects is [here](https://github.com/DmytroMitin/scalafix-codegen).
+Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
 
 ### Rewriting
 For using rewriting rules with Scalameta + SemanticDB + Scalafix write write in `project/plugins.sbt`
