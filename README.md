@@ -244,7 +244,8 @@ inThisBuild(Seq(
   scalaVersion := V.scala212,
   addCompilerPlugin(scalafixSemanticdb),
   scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/"),
-  scalafixDependencies in ThisBuild += "com.github.dmytromitin" %% "auxify-meta" % [LATEST VERSION], // brings rewriting rules
+  // brings rewriting rules
+  scalafixDependencies in ThisBuild += "com.github.dmytromitin" %% "auxify-meta" % [LATEST VERSION],
   scalacOptions += "-Yrangepos" // for SemanticDB
 ))
 
@@ -282,7 +283,7 @@ lazy val out = project
 ```
 Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.12/src_managed/main/scala/` can be run with `sbt out/compile`.
 
-Example projects are [here](https://github.com/DmytroMitin/scalafix-codegen) and [here](https://github.com/olafurpg/scalafix-codegen).
+Example projects is [here](https://github.com/DmytroMitin/scalafix-codegen).
 
 ### Rewriting
 For using rewriting rules with Scalameta + SemanticDB + Scalafix write write in `project/plugins.sbt`
