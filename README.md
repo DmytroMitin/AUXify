@@ -264,11 +264,6 @@ inThisBuild(Seq(
   scalacOptions += "-Yrangepos" // for SemanticDB
 ))
 
-lazy val rules = project
-  .settings(
-    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % V.scalafixVersion
-  )
-
 lazy val in = project
   .settings(
     // brings meta annotations
