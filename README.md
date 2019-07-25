@@ -7,7 +7,7 @@
 
 [mvnrepository](https://mvnrepository.com/artifact/com.github.dmytromitin)
 
-## Using
+## Using AUXify-Macros
 Write in `build.sbt`
 ```scala
 scalaVersion := "2.13.0"
@@ -17,11 +17,17 @@ scalaVersion := "2.13.0"
 
 resolvers += Resolver.sonatypeRepo("releases")
 
-libraryDependencies += "com.github.dmytromitin" %% "auxify-macros" % "0.3"
+libraryDependencies += "com.github.dmytromitin" %% "auxify-macros" % "0.4"
 
 scalacOptions += "-Ymacro-annotations" // in Scala >= 2.13
 //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) // in Scala <= 2.12
 ```
+## Using AUXify-Meta
+For code generation with Scalameta + SemanticDB + Scalafix write in `build.sbt`
+
+For using rewriting rules with Scalameta + SemanticDB + Scalafix write in `build.sbt`
+
+Currently only @aux is implemented as Scalafix (semantic) rewriting rule.
 
 ## @aux
 Transforms
