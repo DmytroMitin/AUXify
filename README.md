@@ -286,7 +286,7 @@ Then do `sbt out/compile`.
 Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
 
 ### Rewriting
-For using rewriting rules with Scalameta + SemanticDB + Scalafix write in `build.sbt` obtained after `sbt new scalacenter/scalafix.g8 --repo="Repository Name"`)
+For using rewriting rules with Scalameta + SemanticDB + Scalafix write in `build.sbt` obtained after `sbt new scalacenter/scalafix.g8 --repo="Repository Name"`
 ```sbtshell
 lazy val auxifyMeta = "com.github.dmytromitin" %% "auxify-meta" % "0.4"
 import com.geirsson.coursiersmall.{Repository => R}
