@@ -301,7 +301,7 @@ Annotated code should be placed in `in/src/main/scala`. Code generation in `out/
 Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
 
 ### Rewriting
-For using rewriting rules with Scalameta + SemanticDB + Scalafix write write in `project/plugins.sbt`
+For using rewriting rules with Scalameta + SemanticDB + Scalafix write in `project/plugins.sbt`
 ```scala
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
 ```
