@@ -225,6 +225,7 @@ import Monoid.syntax._
 Inheritance of type classes is not supported (anyway it's [broken](https://typelevel.org/blog/2016/09/30/subtype-typeclasses.html)).
 
 ## Using AUXify-Meta
+### Code generation
 For code generation with Scalameta + SemanticDB + Scalafix write in `plugins.sbt`
 ```sbtshell
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
@@ -284,6 +285,7 @@ Then do `sbt out/compile`.
 
 Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
 
+### Rewriting
 For using rewriting rules with Scalameta + SemanticDB + Scalafix write in `build.sbt` obtained after `sbt new scalacenter/scalafix.g8 --repo="Repository Name"`)
 ```sbtshell
 lazy val auxifyMeta = "com.github.dmytromitin" %% "auxify-meta" % "0.4"
