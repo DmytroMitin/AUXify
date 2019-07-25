@@ -8,7 +8,7 @@ ThisBuild / name                 := "auxify"
 ThisBuild / organization         := "com.github.dmytromitin"
 ThisBuild / organizationName     := "Dmytro Mitin"
 ThisBuild / organizationHomepage := Some(url("https://github.com/DmytroMitin"))
-ThisBuild / version              := "0.5"
+ThisBuild / version              := "0.6"
 ThisBuild / scalaVersion         := scala213
 ThisBuild / scmInfo := Some(ScmInfo(
   url("https://github.com/DmytroMitin/AUXify"),
@@ -123,7 +123,7 @@ lazy val metaIn = (project in file("meta-in"))
   )
 
 lazy val metaOut = (project in file("meta-out"))
-  .dependsOn(metaCore)
+  .dependsOn(metaCore) // for import and if meta annotation is not expanded // TODO #15
   .settings(
     name := "auxify-meta-out",
     sourceGenerators.in(Compile) += Def.taskDyn {
@@ -145,15 +145,16 @@ lazy val metaOut = (project in file("meta-out"))
   )
 
 lazy val metaOutExpectedForTests = (project in file("meta-out-expected-for-tests"))
-  .dependsOn(metaCore)
+  .dependsOn(metaCore) // for import and if meta annotation is not expanded // TODO #15
   .settings(
     name := "auxify-out-expected-for-tests",
     skip in publish := true,
     metaCommonSettings
   )
 
-// file meta/src/main/resources/META-INF/services/scalafix.v1.Rule and top comment
-// in meta-in/src/main/scala/[package]/[input file].scala are necessary for tests
+// config file meta/src/main/resources/META-INF/services/scalafix.v1.Rule and top comment /* SomeRule */
+// in meta-in/src/main/scala/[package]/[input file].scala are necessary for tests,
+// for code generation they are not necessary
 lazy val metaTests = (project in file("meta-tests"))
   .dependsOn(metaRules)
   .settings(

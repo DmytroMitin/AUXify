@@ -1,10 +1,10 @@
 package com.github.dmytromitin.auxify.meta
 
-import scala.annotation.StaticAnnotation
+import scala.annotation.Annotation
 
-class aux extends StaticAnnotation
-class apply extends StaticAnnotation
-class delegated extends StaticAnnotation
-class instance extends StaticAnnotation
-class self extends StaticAnnotation
-class syntax extends StaticAnnotation
+class aux extends Annotation
+class apply extends Annotation
+class delegated extends Annotation
+class instance extends Annotation
+class self extends Annotation
+class syntax extends Annotation

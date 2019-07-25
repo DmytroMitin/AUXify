@@ -6,6 +6,7 @@
 [![Sonatype Snapshots](https://img.shields.io/nexus/r/https/oss.sonatype.org/com.github.dmytromitin/auxify-macros_2.13.svg?color=success)](https://oss.sonatype.org/content/groups/public/com/github/dmytromitin/auxify-macros_2.13/)
 
 [mvnrepository](https://mvnrepository.com/artifact/com.github.dmytromitin)
+[repo1.maven](https://repo1.maven.org/maven2/com/github/dmytromitin/)
 
 ## Using AUXify-Macros
 Write in `build.sbt`
@@ -233,15 +234,15 @@ addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
 and in `build.sbt`
 ```sbtshell
 import com.geirsson.coursiersmall.{Repository => R}
-scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/")
-scalafixDependencies in ThisBuild += "com.github.dmytromitin" %% "auxify-meta" % [LATEST VERSION]
 
 lazy val V = _root_.scalafix.sbt.BuildInfo
 
-inThisBuild(List(
+inThisBuild(Seq(
   scalaVersion := V.scala212,
   addCompilerPlugin(scalafixSemanticdb),
-  scalacOptions ++= List(
+  scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/"),
+  scalafixDependencies in ThisBuild += "com.github.dmytromitin" %% "auxify-meta" % "0.5",
+  scalacOptions ++= Seq(
     "-Yrangepos"
   )
 ))
@@ -271,10 +272,13 @@ lazy val out = project
           .value
         (to ** "*.scala").get
       }
-    }.taskValue
+    }.taskValue,
+    
+    // for import and if meta annotation is not expanded
+    libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % "0.5" 
   )
 ```
-Annotated code should be in `in`. Code generation in `out` can be run with `sbt out/compile`.
+Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.12/src_managed/main/scala/` can be run with `sbt out/compile`.
 
 Example projects are [here](https://github.com/DmytroMitin/scalafix-codegen) and [here](https://github.com/olafurpg/scalafix-codegen).
 
