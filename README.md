@@ -226,8 +226,11 @@ import Monoid.syntax._
 Inheritance of type classes is not supported (anyway it's [broken](https://typelevel.org/blog/2016/09/30/subtype-typeclasses.html)).
 
 ## Using AUXify-Meta
+
+Currently only @aux is implemented as Scalafix (semantic) rewriting rule.
+
 ### Code generation
-For code generation with Scalameta + SemanticDB + Scalafix write in `plugins.sbt`
+For code generation with Scalameta + SemanticDB + Scalafix write in `project/plugins.sbt`
 ```sbtshell
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
 ```
@@ -241,10 +244,8 @@ inThisBuild(Seq(
   scalaVersion := V.scala212,
   addCompilerPlugin(scalafixSemanticdb),
   scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/"),
-  scalafixDependencies in ThisBuild += "com.github.dmytromitin" %% "auxify-meta" % "0.5",
-  scalacOptions ++= Seq(
-    "-Yrangepos"
-  )
+  scalafixDependencies in ThisBuild += "com.github.dmytromitin" %% "auxify-meta" % [LATEST VERSION], // brings rewriting rules
+  scalacOptions += "-Yrangepos" // for SemanticDB
 ))
 
 lazy val rules = project
@@ -254,6 +255,7 @@ lazy val rules = project
 
 lazy val in = project
   .settings(
+    // brings meta annotations
     libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % [LATEST VERSION]
   )
 
@@ -274,8 +276,8 @@ lazy val out = project
       }
     }.taskValue,
     
-    // for import and if meta annotation is not expanded
-    libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % "0.5" 
+    // for import statement and if meta annotation is not expanded
+    libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % [LATEST VERSION]
   )
 ```
 Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.12/src_managed/main/scala/` can be run with `sbt out/compile`.
@@ -283,17 +285,24 @@ Annotated code should be placed in `in/src/main/scala`. Code generation in `out/
 Example projects are [here](https://github.com/DmytroMitin/scalafix-codegen) and [here](https://github.com/olafurpg/scalafix-codegen).
 
 ### Rewriting
-For using rewriting rules with Scalameta + SemanticDB + Scalafix write in `build.sbt` obtained after `sbt new scalacenter/scalafix.g8 --repo="Repository Name"`
+For using rewriting rules with Scalameta + SemanticDB + Scalafix write write in `project/plugins.sbt`
 ```sbtshell
-lazy val auxifyMeta = "com.github.dmytromitin" %% "auxify-meta" % [LATEST VERSION]
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
+```
+and in `build.sbt`
+```sbtshell
+// on the top
 import com.geirsson.coursiersmall.{Repository => R}
 scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/")
-scalafixDependencies in ThisBuild += auxifyMeta
-libraryDependencies in ThisBuild += auxifyMeta
+scalafixDependencies in ThisBuild += "com.github.dmytromitin" %% "auxify-meta" % "0.5"
+
+scalaVersion := "2.12.8"
+
+libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % "0.5"
+
+addCompilerPlugin(scalafixSemanticdb)
+
+scalacOptions += "-Yrangepos" // for SemanticDB
 ```
 
-Then do `sbt tests/test` (details are [here](https://scalacenter.github.io/scalafix/docs/developers/setup.html)).
-
-Example project is [here](https://github.com/DmytroMitin/scalafix-demo).
-
-Currently only @aux is implemented as Scalafix (semantic) rewriting rule.
+Rewriting can be run with `sbt "scalafix AuxRule"` (details are [here](https://scalacenter.github.io/scalafix/docs/users/installation.html)).
