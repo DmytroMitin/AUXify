@@ -10,12 +10,12 @@
 
 ## Contents
 - [Using AUXify-Macros](#using-auxify-macros)
-  * [@aux](#-aux)
-  * [@self](#-self)
-  * [@instance (constructor)](#-instance--constructor-)
-  * [@apply (materializer)](#-apply--materializer-)
-  * [@delegated](#-delegated)
-  * [@syntax](#-syntax)
+  * [@aux](#aux)
+  * [@self](#self)
+  * [@instance (constructor)](#instance--constructor-)
+  * [@apply (materializer)](#apply--materializer-)
+  * [@delegated](#delegated)
+  * [@syntax](#syntax)
 - [Using AUXify-Meta](#using-auxify-meta)
   * [Code generation](#code-generation)
   * [Rewriting](#rewriting)
