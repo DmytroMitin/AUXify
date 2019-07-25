@@ -239,7 +239,7 @@ Inheritance of type classes is not supported (anyway it's [broken](https://typel
 
 ## Using AUXify-Meta
 
-Currently only `@aux` is implemented (as Scalafix semantic rewriting rule).
+Currently only `@aux` is implemented as Scalafix rewriting rule. It's a semantic rule since we need companion object.
 
 Meta annotation `@aux` works only with classes on contrary to macro annotation `@aux` working only with traits. 
 [This will be fixed.](https://github.com/DmytroMitin/AUXify/issues/10) 
