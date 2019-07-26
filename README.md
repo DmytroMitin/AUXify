@@ -10,7 +10,7 @@
 
 ## Contents
 - [Using AUXify-Macros](#using-auxify-macros)
-  * [@aux](#aux)
+  * [@aux (helper for type refinement)](#aux)
   * [@self](#self)
   * [@instance (constructor)](#instance--constructor-)
   * [@apply (materializer)](#apply--materializer-)
@@ -36,7 +36,7 @@ scalacOptions += "-Ymacro-annotations" // in Scala >= 2.13
 //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) // in Scala <= 2.12
 ```
 
-## @aux
+## @aux (helper for type refinement)
 Transforms
 ```scala
 @aux
