@@ -10,7 +10,7 @@
 
 ## Contents
 - [Using AUXify-Macros](#using-auxify-macros)
-  * [@aux (helper for type refinement)](#aux)
+  * [@aux (helper for type refinement)](#aux-helper-for-type-refinement)
   * [@self](#self)
   * [@instance (constructor)](#instance--constructor-)
   * [@apply (materializer)](#apply--materializer-)

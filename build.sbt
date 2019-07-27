@@ -3,6 +3,7 @@ lazy val scala212 = "2.12.8"
 lazy val scala211 = "2.11.12"
 lazy val scala210 = "2.10.7"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211, scala210)
+lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" % Test
 
 ThisBuild / name                 := "auxify"
 ThisBuild / organization         := "com.github.dmytromitin"
@@ -35,11 +36,13 @@ ThisBuild / publishTo := {
 }
 
 lazy val root = (project in file("."))
-  .aggregate(macros, macrosTests, metaCore, metaRules, metaTests)
+  .aggregate(macros, macrosTests, metaCore212, metaCore213, metaRules, metaTests, metaUnitTests, syntacticMeta, syntacticMetaTests)
   .settings(
     crossScalaVersions := Nil,
     publish / skip := true,
   )
+
+// ======================= MACROS ================================
 
 lazy val macrosCommonSettings = Seq(
   crossScalaVersions := supportedScalaVersions,
@@ -81,10 +84,12 @@ lazy val macros = (project in file("macros")).settings(
 
 lazy val macrosTests = (project in file("macros-tests")).dependsOn(macros).settings(
   name := "auxify-macros-tests",
-  libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test,
+  libraryDependencies += scalaTest,
   macrosCommonSettings,
   publish / skip := true,
 )
+
+// ======================= META ================================
 
 lazy val V = _root_.scalafix.sbt.BuildInfo
 
@@ -98,10 +103,10 @@ lazy val metaCommonSettings = Seq(
   )
 )
 
-lazy val metaCore = (project in file("meta-core"))
+lazy val metaCore212 = (project in file("meta-core-2.12"))
   .settings(
     name := "auxify-meta-core",
-    libraryDependencies ++= Seq(),
+    scalaSource in Compile := baseDirectory.value / ".." / "meta-core" / "src" / "main" / "scala",
     metaCommonSettings
   )
 
@@ -115,7 +120,7 @@ lazy val metaRules = (project in file("meta"))
   )
 
 lazy val metaIn = (project in file("meta-in"))
-  .dependsOn(metaCore)
+  .dependsOn(metaCore212)
   .settings(
     name := "auxify-meta-in",
     publish / skip := true,
@@ -123,7 +128,7 @@ lazy val metaIn = (project in file("meta-in"))
   )
 
 lazy val metaOut = (project in file("meta-out"))
-  .dependsOn(metaCore) // for import and if meta annotation is not expanded // TODO #15
+  .dependsOn(metaCore212) // for import and if meta annotation is not expanded // TODO #15
   .settings(
     name := "auxify-meta-out",
     sourceGenerators.in(Compile) += Def.taskDyn {
@@ -145,7 +150,7 @@ lazy val metaOut = (project in file("meta-out"))
   )
 
 lazy val metaOutExpectedForTests = (project in file("meta-out-expected-for-tests"))
-  .dependsOn(metaCore) // for import and if meta annotation is not expanded // TODO #15
+  .dependsOn(metaCore212) // for import statement and if meta annotation is not expanded // TODO #15
   .settings(
     name := "auxify-out-expected-for-tests",
     skip in publish := true,
@@ -172,3 +177,65 @@ lazy val metaTests = (project in file("meta-tests"))
     metaCommonSettings
   )
   .enablePlugins(ScalafixTestkitPlugin)
+
+lazy val metaUnitTests = (project in file("meta-unit-tests"))
+  .dependsOn(metaOut)
+  .settings(
+    name := "auxify-meta-tests",
+    publish / skip := true,
+    libraryDependencies += scalaTest,
+    metaCommonSettings
+  )
+
+// ======================= SYNTACTIC META ================================
+
+lazy val syntacticMetaCommonSettings = Seq(
+  crossScalaVersions := Seq(scala213),
+  scalaVersion := scala213,
+  skip in publish := true,
+)
+
+lazy val metaCore213 = (project in file("meta-core-2.13"))
+  .settings(
+    name := "auxify-meta-core",
+    scalaSource in Compile := baseDirectory.value / ".." / "meta-core" / "src" / "main" / "scala",
+    syntacticMetaCommonSettings
+  )
+
+lazy val syntacticMeta = (project in file("syntactic-meta"))
+  .settings(
+    name := "auxify-syntactic-meta",
+    libraryDependencies ++= Seq(
+      "org.scalameta" %% "scalameta" % "4.2.0",
+    ),
+    syntacticMetaCommonSettings
+  )
+
+lazy val syntacticMetaIn = (project in file("syntactic-meta-in"))
+  .dependsOn(metaCore213)
+  .settings(
+    name := "auxify-syntactic-meta-in",
+    syntacticMetaCommonSettings
+  )
+
+lazy val syntacticMetaOut = (project in file("syntactic-meta-out"))
+  .dependsOn(metaCore213) // for import statement and if meta annotation is not expanded // TODO #15
+  .settings(
+    name := "auxify-syntactic-meta-out",
+    sourceGenerators in Compile += Def.task {
+      import com.github.dmytromitin.auxify.meta.syntactic.Generator
+      Generator.gen(
+        inputDir  = sourceDirectory.in(syntacticMetaIn, Compile).value,
+        outputDir = sourceManaged.in(Compile).value
+      )
+    }.taskValue,
+    syntacticMetaCommonSettings
+  )
+
+lazy val syntacticMetaTests = (project in file("syntactic-meta-tests"))
+  .dependsOn(syntacticMetaOut)
+  .settings(
+    name := "auxify-syntactic-meta-tests",
+    libraryDependencies += scalaTest,
+    syntacticMetaCommonSettings
+  )

@@ -8,3 +8,4 @@ class delegated extends Annotation
 class instance extends Annotation
 class self extends Annotation
 class syntax extends Annotation
+class main extends Annotation
