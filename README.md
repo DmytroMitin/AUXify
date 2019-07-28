@@ -19,7 +19,7 @@
 - [Using AUXify-Meta](#using-auxify-meta)
   * [Code generation](#code-generation-with-scalafix)
   * [Rewriting](#rewriting-with-scalafix)
-  * [Rewriting with Scalameta](#rewriting-with-scalameta)
+  * [Code generation with Scalameta](#code-generation-with-scalameta)
 
 ## Using AUXify-Macros
 Write in `build.sbt`
@@ -319,7 +319,7 @@ scalacOptions += "-Yrangepos" // for SemanticDB
 
 Rewriting can be run with `sbt "scalafix AuxRule"` (details are [here](https://scalacenter.github.io/scalafix/docs/users/installation.html)).
 
-### Rewriting with Scalameta
+### Code generation with Scalameta
 For code generating syntacticly with pure [Scalameta](https://scalameta.org/) (without [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) and [Scalafix](https://scalacenter.github.io/scalafix/)) write in `project/build.sbt`
 ```scala
 resolvers += Resolver.sonatypeRepo("releases")
