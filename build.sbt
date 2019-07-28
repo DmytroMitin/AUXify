@@ -9,7 +9,7 @@ ThisBuild / name                 := "auxify"
 ThisBuild / organization         := "com.github.dmytromitin"
 ThisBuild / organizationName     := "Dmytro Mitin"
 ThisBuild / organizationHomepage := Some(url("https://github.com/DmytroMitin"))
-ThisBuild / version              := "0.6"
+ThisBuild / version              := "0.7"
 ThisBuild / scalaVersion         := scala213
 ThisBuild / scmInfo := Some(ScmInfo(
   url("https://github.com/DmytroMitin/AUXify"),
@@ -190,16 +190,15 @@ lazy val metaUnitTests = (project in file("meta-unit-tests"))
 // ======================= SYNTACTIC META ================================
 
 lazy val syntacticMetaCommonSettings = Seq(
-  crossScalaVersions := Seq(scala213),
+  crossScalaVersions := Seq(scala213, scala212),
   scalaVersion := scala213,
-  skip in publish := true,
 )
 
 lazy val metaCore213 = (project in file("meta-core-2.13"))
   .settings(
     name := "auxify-meta-core",
     scalaSource in Compile := baseDirectory.value / ".." / "meta-core" / "src" / "main" / "scala",
-    syntacticMetaCommonSettings
+    syntacticMetaCommonSettings,
   )
 
 lazy val syntacticMeta = (project in file("syntactic-meta"))
@@ -208,14 +207,15 @@ lazy val syntacticMeta = (project in file("syntactic-meta"))
     libraryDependencies ++= Seq(
       "org.scalameta" %% "scalameta" % "4.2.0",
     ),
-    syntacticMetaCommonSettings
+    syntacticMetaCommonSettings,
   )
 
 lazy val syntacticMetaIn = (project in file("syntactic-meta-in"))
   .dependsOn(metaCore213)
   .settings(
     name := "auxify-syntactic-meta-in",
-    syntacticMetaCommonSettings
+    syntacticMetaCommonSettings,
+    skip in publish := true,
   )
 
 lazy val syntacticMetaOut = (project in file("syntactic-meta-out"))
@@ -229,7 +229,8 @@ lazy val syntacticMetaOut = (project in file("syntactic-meta-out"))
         outputDir = sourceManaged.in(Compile).value
       )
     }.taskValue,
-    syntacticMetaCommonSettings
+    syntacticMetaCommonSettings,
+    skip in publish := true,
   )
 
 lazy val syntacticMetaTests = (project in file("syntactic-meta-tests"))
@@ -237,5 +238,6 @@ lazy val syntacticMetaTests = (project in file("syntactic-meta-tests"))
   .settings(
     name := "auxify-syntactic-meta-tests",
     libraryDependencies += scalaTest,
-    syntacticMetaCommonSettings
+    syntacticMetaCommonSettings,
+    skip in publish := true,
   )

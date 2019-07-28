@@ -17,8 +17,9 @@
   * [@delegated](#delegated)
   * [@syntax](#syntax)
 - [Using AUXify-Meta](#using-auxify-meta)
-  * [Code generation](#code-generation)
-  * [Rewriting](#rewriting)
+  * [Code generation](#code-generation-with-scalafix)
+  * [Rewriting](#rewriting-with-scalafix)
+  * [Rewriting with Scalameta](#rewriting-with-scalameta)
 
 ## Using AUXify-Macros
 Write in `build.sbt`
@@ -244,7 +245,7 @@ Currently only `@aux` is implemented as Scalafix rewriting rule. It's a semantic
 Meta annotation `@aux` works only with classes on contrary to macro annotation `@aux` working only with traits. 
 [This will be fixed.](https://github.com/DmytroMitin/AUXify/issues/10) 
 
-### Code generation
+### Code generation with Scalafix
 For code generation with [Scalameta](https://scalameta.org/) + [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) + [Scalafix](https://scalacenter.github.io/scalafix/) write in `project/plugins.sbt`
 ```scala
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
@@ -291,11 +292,11 @@ lazy val out = project
     libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % [LATEST VERSION]
   )
 ```
-Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.12/src_managed/main/scala/` can be run with `sbt out/compile`.
+Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.12/src_managed/main/scala` can be run with `sbt out/compile`.
 
 Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
 
-### Rewriting
+### Rewriting with Scalafix
 For using rewriting rules with [Scalameta](https://scalameta.org/) + [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) + [Scalafix](https://scalacenter.github.io/scalafix/) write in `project/plugins.sbt`
 ```scala
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
@@ -317,3 +318,45 @@ scalacOptions += "-Yrangepos" // for SemanticDB
 ```
 
 Rewriting can be run with `sbt "scalafix AuxRule"` (details are [here](https://scalacenter.github.io/scalafix/docs/users/installation.html)).
+
+### Rewriting with Scalameta
+For code generating syntacticly with pure [Scalameta](https://scalameta.org/) (without [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) and [Scalafix](https://scalacenter.github.io/scalafix/)) write in `project/build.sbt`
+```scala
+resolvers += Resolver.sonatypeRepo("releases")
+libraryDependencies += "com.github.dmytromitin" %% "auxify-syntactic-meta" % [LATEST VERSION]
+```
+and in `build.sbt`
+```scala
+inThisBuild(Seq(
+  scalaVersion := "2.13.0"
+  //scalaVersion := "2.12.8"
+))
+
+lazy val in = project
+  .settings(
+    libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % [LATEST VERSION]
+  )
+
+lazy val out = project
+  .settings(
+    sourceGenerators in Compile += Def.task {
+      import com.github.dmytromitin.auxify.meta.syntactic.ScalametaTransformer
+      
+      val finder: PathFinder = sourceDirectory.in(in, Compile).value ** "*.scala"
+  
+      for(inputFile <- finder.get) yield {
+        val inputStr = IO.read(inputFile)
+        val outputFile = sourceManaged.in(Compile).value / inputFile.name
+        val outputStr = ScalametaTransformer.transform(inputStr)
+        IO.write(outputFile, outputStr)
+        outputFile
+      }
+    }.taskValue,
+    
+    // for import statement and if meta annotation is not expanded
+    libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % [LATEST VERSION]
+  )
+```
+Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.12/src_managed/main` can be run with `sbt out/compile`.
+
+Example project is [here](https://github.com/DmytroMitin/scalameta-demo).
