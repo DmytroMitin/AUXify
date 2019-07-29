@@ -2,7 +2,7 @@
 
 import com.github.dmytromitin.auxify.meta.aux
 
-//object App {
+object App {
 
 @aux
 class A[T] {
@@ -15,5 +15,5 @@ object C
 
 object A
 
-//}
+}
 
