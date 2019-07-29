@@ -105,7 +105,7 @@ object ScalametaTransformer {
           q"package $eref { ..${transform(stats)} }"
 //        case q"..$stats" =>
 //          q"..${transform(stats)}"
-        case source"..$stats" => // TODO without this top-level doesn't work, with this nested doesn't work
+        case source"..$stats" => // TODO without this top-level doesn't work, with this nested doesn't work #23
           source"..${transform(stats)}"
         case t =>
           super.apply(t)
