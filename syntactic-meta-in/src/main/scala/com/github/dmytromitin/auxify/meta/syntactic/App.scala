@@ -1,17 +1,19 @@
-package com.github.dmytromitin.auxify.meta.syntactic
+//package com.github.dmytromitin.auxify.meta.syntactic
 
 import com.github.dmytromitin.auxify.meta.aux
 
-object App {
+//object App {
 
-  @aux
-  class A[T] {
-    type U
-  }
-
-  class B
-
-  object C
-
-  object A
+@aux
+class A[T] {
+  type U
 }
+
+class B
+
+object C
+
+object A
+
+//}
+

@@ -73,56 +73,47 @@ object ScalametaTransformer {
     q"type Aux[..${tparams2 ++ tparams1}] = $rhs"
   }
 
+  def transform(stats: List[Stat]): List[Stat] = {
+    val tnames = stats.collect {
+      case q"..$mods class $tname[..$tparams] ..$_ (...$_) extends { ..$_ } with ..$_ { $_ => ..$stats }" if mods.exists(isAux) =>
+        tname.value -> (tparams, stats)
+    }.toMap
+
+    stats.map {
+      case q"..$mods class $tname[..$tparams] ..$ctorMods (...$paramss) extends $template" if mods.exists(isAux) =>
+        q"..${mods.filterNot(isAux)} class $tname[..$tparams] ..$ctorMods (...$paramss) extends $template"
+      case q"..$mods object $ename extends { ..$stats } with ..$inits { $self => ..$stats1 }" if tnames.contains(ename.value) =>
+        q"..$mods object $ename extends { ..$stats } with ..$inits { $self => ..${createAux(tnames(ename.value)._1, Type.Name(ename.value), tnames(ename.value)._2) :: stats1} }"
+      case t => t
+    }
+  }
+
   def transform(tree: Tree): Tree = {
     val transformer = new Transformer {
       override def apply(tree: Tree): Tree = tree match {
-        case q"..$mods object $ename extends { ..$stats } with ..$inits { $self => ..$stats1 }"  =>
-          val tnames = stats1.collect {
-            case q"..$mods class $tname[..$tparams] ..$ctorMods (...$paramss) extends { ..$stats } with ..$inits { $self => ..$stats1 }" if mods.exists(isAux) =>
-              tname.value -> (tparams, stats1)
-          }.toMap
-
-          val stats2 = stats1.map {
-            case q"..$mods class $tname[..$tparams] ..$ctorMods (...$paramss) extends $template" if mods.exists(isAux) =>
-              q"..${mods.filterNot(isAux)} class $tname[..$tparams] ..$ctorMods (...$paramss) extends $template"
-            case t => t
-          }
-
-          val stats3 = stats2.map {
-            case q"..$mods object $ename extends { ..$stats } with ..$inits { $self => ..$stats1 }" if tnames.contains(ename.value) =>
-              q"..$mods object $ename extends { ..$stats } with ..$inits { $self => ..${createAux(tnames(ename.value)._1, Type.Name(ename.value), tnames(ename.value)._2) :: stats1} }"
-            case t => t
-          }
-
-          q"..$mods object $ename extends { ..$stats } with ..$inits { $self => ..$stats3 }"
-
-        case t => super.apply(t)
+        case template"{ ..$stats } with ..$inits { $self => ..$stats1 }"  =>
+          template"{ ..${transform(stats)} } with ..$inits { $self => ..${transform(stats1)} }"
+        case q"{ ..$stats }" =>
+          q"{ ..${transform(stats)} }"
+//        case q"new { ..$stat } with ..$inits { $self => ..$stats }" =>
+//          q"new { ..$stat } with ..$inits { $self => ..${transform(stats)} }"
+        case t"$tpeopt { ..$stats }" =>
+          t"$tpeopt { ..${transform(stats)} }"
+        case t"$tpe forSome { ..$statsnel }" =>
+          t"$tpe forSome { ..${transform(statsnel)} }"
+        case q"package $eref { ..$stats }" =>
+          q"package $eref { ..${transform(stats)} }"
+//        case q"..$stats" =>
+//          q"..${transform(stats)}"
+        case source"..$stats" => // TODO without this top-level doesn't work, with this nested doesn't work
+          source"..${transform(stats)}"
+        case t =>
+          super.apply(t)
       }
     }
 
     transformer(tree)
   }
 
-//  def transform(tree: Tree): Tree = {
-//    val isMain: Mod => Boolean = { case mod"@aux" => true; case _ => false }
-//
-//    val transformer = new Transformer {
-//      override def apply(tree: Tree): Tree = tree match {
-//        case q"..$mods object $ename extends { ..$stats } with ..$inits { $self => ..$stats1 }" if mods.exists(isMain)  =>
-//          q"""
-//            ..${mods.filterNot(isMain)} object $ename extends { ..$stats } with ..$inits { $self =>
-//              def main(args: Array[String]): Unit = {
-//                ..$stats1
-//              }
-//            }"""
-//
-//        case node => super.apply(node)
-//      }
-//    }
-//
-//    transformer(tree)
-//  }
-
   def transform(input: String): String = transform(input.parse[Source].get).toString
-  
 }
