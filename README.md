@@ -17,8 +17,8 @@
   * [@delegated](#delegated)
   * [@syntax](#syntax)
 - [Using AUXify-Meta](#using-auxify-meta)
-  * [Code generation](#code-generation-with-scalafix)
-  * [Rewriting](#rewriting-with-scalafix)
+  * [Code generation with Scalafix](#code-generation-with-scalafix)
+  * [Rewriting with Scalafix](#rewriting-with-scalafix)
   * [Code generation with Scalameta](#code-generation-with-scalameta)
 
 ## Using AUXify-Macros
