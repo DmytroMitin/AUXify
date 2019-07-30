@@ -83,11 +83,21 @@ object ScalametaTransformer {
       case q"..$mods class $tname[..$tparams] ..$ctorMods (...$paramss) extends $template" if mods.exists(isAux) =>
         q"..${mods.filterNot(isAux)} class $tname[..$tparams] ..$ctorMods (...$paramss) extends $template"
       case q"..$mods object $ename extends { ..$stats } with ..$inits { $self => ..$stats1 }" if tnames.contains(ename.value) =>
-        q"..$mods object $ename extends { ..$stats } with ..$inits { $self => ..${createAux(tnames(ename.value)._1, Type.Name(ename.value), tnames(ename.value)._2) :: stats1} }"
+        val (tparams, stats2) = tnames(ename.value)
+        val aux = createAux(tparams, Type.Name(ename.value), stats2)
+        q"..$mods object $ename extends { ..$stats } with ..$inits { $self => ..${aux :: stats1} }"
       case t => t
     }
   }
 
+
+  //nested:
+  // Source/stats/Object/templ/Template/stats
+  // Source/stats/Object/templ/Template/stats/Block/stats
+  // Source/stats/Pckg/stats/Object/templ/Template/stats
+  //top-level:
+  // Source/stats
+  // Source/stats/Pckg/stats //TODO still doesn't work
   def transform(tree: Tree): Tree = {
     val transformer = new Transformer {
       override def apply(tree: Tree): Tree = tree match {
@@ -95,24 +105,48 @@ object ScalametaTransformer {
           template"{ ..${transform(stats)} } with ..$inits { $self => ..${transform(stats1)} }"
         case q"{ ..$stats }" =>
           q"{ ..${transform(stats)} }"
-//        case q"new { ..$stat } with ..$inits { $self => ..$stats }" =>
-//          q"new { ..$stat } with ..$inits { $self => ..${transform(stats)} }"
         case t"$tpeopt { ..$stats }" =>
           t"$tpeopt { ..${transform(stats)} }"
         case t"$tpe forSome { ..$statsnel }" =>
           t"$tpe forSome { ..${transform(statsnel)} }"
-        case q"package $eref { ..$stats }" =>
-          q"package $eref { ..${transform(stats)} }"
-//        case q"..$stats" =>
-//          q"..${transform(stats)}"
-//        case source"..$stats" => // TODO without this top-level doesn't work, with this nested doesn't work #23
-//          source"..${transform(stats)}"
-        case t =>
-          super.apply(t)
+        case _ => super.apply(tree)
       }
     }
 
-    transformer(tree)
+    transformer(tree match {
+      case source"..$stats" =>
+        source"..${transform(stats)}"
+      case source"..${List(q"package $eref { ..$stats }")}" =>
+        source"..${List(q"package $eref { ..${transform(stats)} }")}"
+      case _ => tree
+    })
+
+
+//    val transformer = new Transformer {
+//      override def apply(tree: Tree): Tree = tree match {
+//        case template"{ ..$stats } with ..$inits { $self => ..$stats1 }"  =>
+//          template"{ ..${transform(stats)} } with ..$inits { $self => ..${transform(stats1)} }"
+//        case q"{ ..$stats }" =>
+//          q"{ ..${transform(stats)} }"
+////        case q"new { ..$stat } with ..$inits { $self => ..$stats }" =>
+////          q"new { ..$stat } with ..$inits { $self => ..${transform(stats)} }"
+//        case t"$tpeopt { ..$stats }" =>
+//          t"$tpeopt { ..${transform(stats)} }"
+//        case t"$tpe forSome { ..$statsnel }" =>
+//          t"$tpe forSome { ..${transform(statsnel)} }"
+//        case q"package $eref { ..$stats }" =>
+//          q"package $eref { ..${transform(stats)} }"
+////        case q"..$stats" =>
+////          q"..${transform(stats)}"
+//          //  top-level, no package
+////        case source"..$stats" => // TODO without this top-level doesn't work, with this nested doesn't work #23
+////          source"..${transform(stats)}"
+//        case t =>
+//          super.apply(t)
+//      }
+//    }
+//
+//    transformer(tree)
   }
 
   def transform(input: String): String = transform(input.parse[Source].get).toString
