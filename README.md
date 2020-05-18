@@ -114,7 +114,6 @@ trait Monoid[A] {
 ```
 into
 ```scala
-@instance
 trait Monoid[A] {
   def empty: A
   def combine(a: A, a1: A): A
