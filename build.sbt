@@ -38,13 +38,12 @@ lazy val root = (project in file("."))
   .aggregate(
     macros,
     macrosTests,
-    metaCoreScalafix,
-    metaCoreScalameta,
+    metaCore,
     metaRules,
     metaTests,
     metaUnitTests,
     syntacticMeta,
-    syntacticMetaTests
+    syntacticMetaTests,
   )
   .settings(
     crossScalaVersions := Nil,
@@ -113,13 +112,6 @@ lazy val metaCommonSettings = Seq(
   )
 )
 
-lazy val metaCoreScalafix = (project in file("meta-core-scalafix"))
-  .settings(
-    name := "auxify-meta-core",
-    scalaSource in Compile := baseDirectory.value / ".." / "meta-core" / "src" / "main" / "scala",
-    metaCommonSettings
-  )
-
 lazy val metaRules = (project in file("meta"))
   .settings(
     name := "auxify-meta",
@@ -130,7 +122,7 @@ lazy val metaRules = (project in file("meta"))
   )
 
 lazy val metaIn = (project in file("meta-in"))
-  .dependsOn(metaCoreScalafix)
+  .dependsOn(metaCore)
   .settings(
     name := "auxify-meta-in",
     publish / skip := true,
@@ -138,7 +130,7 @@ lazy val metaIn = (project in file("meta-in"))
   )
 
 lazy val metaOut = (project in file("meta-out"))
-  .dependsOn(metaCoreScalafix) // for import and if meta annotation is not expanded // TODO #15
+  .dependsOn(metaCore) // for import and if meta annotation is not expanded // TODO #15
   .settings(
     name := "auxify-meta-out",
     sourceGenerators.in(Compile) += Def.taskDyn {
@@ -160,7 +152,7 @@ lazy val metaOut = (project in file("meta-out"))
   )
 
 lazy val metaOutExpectedForTests = (project in file("meta-out-expected-for-tests"))
-  .dependsOn(metaCoreScalafix) // for import statement and if meta annotation is not expanded // TODO #15
+  .dependsOn(metaCore) // for import statement and if meta annotation is not expanded // TODO #15
   .settings(
     name := "auxify-out-expected-for-tests",
     skip in publish := true,
@@ -204,10 +196,9 @@ lazy val syntacticMetaCommonSettings = Seq(
   scalaVersion := scala213,
 )
 
-lazy val metaCoreScalameta = (project in file("meta-core-scalameta"))
+lazy val metaCore = (project in file("meta-core"))
   .settings(
     name := "auxify-meta-core",
-    scalaSource in Compile := baseDirectory.value / ".." / "meta-core" / "src" / "main" / "scala",
     syntacticMetaCommonSettings,
   )
 
@@ -221,7 +212,7 @@ lazy val syntacticMeta = (project in file("syntactic-meta"))
   )
 
 lazy val syntacticMetaIn = (project in file("syntactic-meta-in"))
-  .dependsOn(metaCoreScalameta)
+  .dependsOn(metaCore)
   .settings(
     name := "auxify-syntactic-meta-in",
     syntacticMetaCommonSettings,
@@ -229,7 +220,7 @@ lazy val syntacticMetaIn = (project in file("syntactic-meta-in"))
   )
 
 lazy val syntacticMetaOut = (project in file("syntactic-meta-out"))
-  .dependsOn(metaCoreScalameta) // for import statement and if meta annotation is not expanded // TODO #15
+  .dependsOn(metaCore) // for import statement and if meta annotation is not expanded // TODO #15
   .settings(
     name := "auxify-syntactic-meta-out",
     sourceGenerators in Compile += Def.task {
