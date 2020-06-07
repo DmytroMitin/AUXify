@@ -71,6 +71,7 @@ lazy val shapeless = (project in file("shapeless")).settings(
     scalaTest,
   ),
   scalacOptions ++= Seq(
+//    "-deprecation",
 //    "-Ymacro-debug-lite",
 //    "-Xlog-implicits",
   ),
