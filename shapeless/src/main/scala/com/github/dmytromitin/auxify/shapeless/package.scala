@@ -11,7 +11,7 @@ package object shapeless {
                                                                      valueOf: Witness.Aux[S1]): S1 = valueOf.value
   def symbolToStringHlp[S <: Symbol, S1 <: String with Singleton](s: S)(implicit
                                                                         sts: SymbolToString.Aux[S, S1],
-                                                                        valueOf: ValueOf[S1]): S1 = valueOf.value
+                                                                        valueOf: /*ValueOf*/Witness.Aux[S1]): S1 = valueOf.value
   def symbolToString(s: Symbol): String = macro symbolToStringImpl
   def symbolToStringImpl(c: whitebox.Context)(s: c.Tree): c.Tree = {
     import c.universe._
