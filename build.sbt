@@ -34,8 +34,15 @@ ThisBuild / publishTo := {
   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
+def previousVersion(version: String): String = {
+  val prefix = "0."
+  val decremented = version.stripPrefix(prefix).toInt - 1
+  s"$prefix$decremented"
+}
+
 lazy val root = (project in file("."))
   .aggregate(
+    shapeless,
     macros,
     macrosTests,
     metaCore,
@@ -49,6 +56,22 @@ lazy val root = (project in file("."))
     crossScalaVersions := Nil,
     publish / skip := true,
   )
+
+// ======================= SHAPELESS =============================
+lazy val shapeless = (project in file("shapeless")).settings(
+  name := "auxify-shapeless",
+  macrosCommonSettings,
+  libraryDependencies ++= Seq(
+    scalaOrganization.value % "scala-reflect" % scalaVersion.value,
+    "com.chuusai" %% "shapeless" % "2.4.0-M1",
+    organization.value %% "auxify-macros" % previousVersion(version.value),
+    scalaTest,
+  ),
+  scalacOptions ++= Seq(
+    "-Ymacro-debug-lite",
+    "-Xlog-implicits",
+  ),
+)
 
 // ======================= MACROS ================================
 lazy val macroCompatV = "1.1.1"
