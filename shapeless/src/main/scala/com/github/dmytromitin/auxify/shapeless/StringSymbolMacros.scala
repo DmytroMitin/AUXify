@@ -26,16 +26,14 @@ class StringSymbolMacros(val c: whitebox.Context) extends SingletonTypeUtils {
     q"_root_.com.github.dmytromitin.auxify.shapeless.SymbolToString.instance[$typ, $stringType]()"
   }
 
-  def stringToSymbol(s: c.Tree): c.Tree = {
-    import c.universe._
+  def stringToSymbol(s: Tree): Tree = {
     q"""
       import _root_.shapeless.syntax.singleton._
       _root_.com.github.dmytromitin.auxify.shapeless.`package`.stringToSymbolHlp($s.narrow)
     """
   }
 
-  def symbolToString(s: c.Tree): c.Tree = {
-    import c.universe._
+  def symbolToString(s: Tree): Tree = {
     q"""
       import _root_.shapeless.syntax.singleton._
       _root_.com.github.dmytromitin.auxify.shapeless.`package`.symbolToStringHlp($s.narrow)
