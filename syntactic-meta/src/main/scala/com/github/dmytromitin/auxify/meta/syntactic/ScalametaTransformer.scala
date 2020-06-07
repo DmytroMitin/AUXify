@@ -61,7 +61,7 @@ object ScalametaTransformer {
       val rhs = if (types.isEmpty) t"$tname0" else t"$tname0[..$types]"
       (
         tparam"..$mods $tname0[..$tparams] >: ${renameByMap(low, typeNameMap)} <: ${renameByMap(high, typeNameMap)}",
-        q"..$mods type $tname[..$tparams1] = $rhs",
+        q"..$mods type $tname[..$tparams1] = $rhs"
       )
   }
 
