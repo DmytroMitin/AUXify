@@ -1,6 +1,5 @@
 package com.github.dmytromitin.auxify.shapeless
 
-import org.scalatest._
 import shapeless.{Witness, the => s_the}
 import shapeless.test.sameTyped
 import shapeless.syntax.singleton._

@@ -9,6 +9,7 @@
 [repo1.maven](https://repo1.maven.org/maven2/com/github/dmytromitin/)
 
 ## Contents
+- [Using AUXify-Shapeless](#using-auxify-shapeless)
 - [Using AUXify-Macros](#using-auxify-macros)
   * [@aux (helper for type refinement)](#aux-helper-for-type-refinement)
   * [@self](#self)
@@ -21,11 +22,34 @@
   * [Rewriting with Scalafix](#rewriting-with-scalafix)
   * [Code generation with Scalameta](#code-generation-with-scalameta)
 
+## Using AUXify-Shapeless
+Write in `build.sbt`
+```scala
+scalaVersion := "2.13.2"
+//scalaVersion := "2.12.11"
+//scalaVersion := "2.11.12"
+//scalaVersion := "2.10.7"
+
+resolvers += Resolver.sonatypeRepo("releases")
+
+libraryDependencies += "com.github.dmytromitin" %% "auxify-shapeless" % [LATEST VERSION]
+```
+
+Helps to overcome Shapeless limitation that `shapeless.LabelledGeneric` is `Symbol`-based rather than `String`-based.
+
+Introduces type classes `SymbolToString`, `StringToSymbol` to convert between symbol singleton type and string singleton type.
+```scala
+implicitly[StringToSymbol.Aux["a", Symbol @@ "a"]]
+implicitly[SymbolToString.Aux[Symbol @@ "a", "a"]]
+stringToSymbol("a") // returns Symbol("a") of type Symbol @@ "a"
+symbolToString(Symbol("a")) // returns "a" of type "a"
+```
+
 ## Using AUXify-Macros
 Write in `build.sbt`
 ```scala
-scalaVersion := "2.13.0"
-//scalaVersion := "2.12.8"
+scalaVersion := "2.13.2"
+//scalaVersion := "2.12.11"
 //scalaVersion := "2.11.12"
 //scalaVersion := "2.10.7"
 
@@ -247,7 +271,7 @@ Meta annotation `@aux` works only with classes on contrary to macro annotation `
 ### Code generation with Scalafix
 For code generation with [Scalameta](https://scalameta.org/) + [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) + [Scalafix](https://scalacenter.github.io/scalafix/) write in `project/plugins.sbt`
 ```scala
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.16")
 ```
 and in `build.sbt`
 ```scala
@@ -256,7 +280,7 @@ import com.geirsson.coursiersmall.{Repository => R}
 lazy val V = _root_.scalafix.sbt.BuildInfo
 
 inThisBuild(Seq(
-  scalaVersion := V.scala212,
+  scalaVersion := V.scala213,
   addCompilerPlugin(scalafixSemanticdb),
   scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/"),
   // brings rewriting rules
@@ -291,25 +315,27 @@ lazy val out = project
     libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % [LATEST VERSION]
   )
 ```
-Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.12/src_managed/main/scala` can be run with `sbt out/compile`.
+Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.13/src_managed/main/scala` can be run with `sbt out/compile`.
 
 Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
 
 ### Rewriting with Scalafix
 For using rewriting rules with [Scalameta](https://scalameta.org/) + [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) + [Scalafix](https://scalacenter.github.io/scalafix/) write in `project/plugins.sbt`
 ```scala
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.16")
 ```
 and in `build.sbt`
 ```scala
 // on the top
 import com.geirsson.coursiersmall.{Repository => R}
 scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/")
-scalafixDependencies in ThisBuild += "com.github.dmytromitin" %% "auxify-meta" % "0.5"
+scalafixDependencies in ThisBuild += "com.github.dmytromitin" %% "auxify-meta" % [LATEST VERSION]
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.13.2"
+//scalaVersion := "2.12.11"
+//scalaVersion := "2.11.12"
 
-libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % "0.5"
+libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % [LATEST VERSION]
 
 addCompilerPlugin(scalafixSemanticdb)
 
@@ -327,8 +353,9 @@ libraryDependencies += "com.github.dmytromitin" %% "auxify-syntactic-meta" % [LA
 and in `build.sbt`
 ```scala
 inThisBuild(Seq(
-  scalaVersion := "2.13.0"
-  //scalaVersion := "2.12.8"
+  scalaVersion := "2.13.2"
+  //scalaVersion := "2.12.11"
+  //scalaVersion := "2.11.12"
 ))
 
 lazy val in = project
@@ -356,6 +383,6 @@ lazy val out = project
     libraryDependencies += "com.github.dmytromitin" %% "auxify-meta-core" % [LATEST VERSION]
   )
 ```
-Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.12/src_managed/main` can be run with `sbt out/compile`.
+Annotated code should be placed in `in/src/main/scala`. Code generation in `out/target/scala-2.13/src_managed/main` can be run with `sbt out/compile`.
 
 Example project is [here](https://github.com/DmytroMitin/scalameta-demo).
