@@ -63,7 +63,10 @@ lazy val shapeless = (project in file("shapeless")).settings(
   macrosCommonSettings,
   libraryDependencies ++= Seq(
     scalaOrganization.value % "scala-reflect" % scalaVersion.value,
-    "com.chuusai" %% "shapeless" % "2.4.0-M1",
+    "com.chuusai" %% "shapeless" % (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, v)) if v >= 11 => "2.4.0-M1"
+      case _                       => "2.3.3"
+    }),
     organization.value %% "auxify-macros" % previousVersion(version.value),
     scalaTest,
   ),
