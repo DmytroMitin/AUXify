@@ -25,7 +25,7 @@ class StringSymbolTest extends AnyFlatSpec with Matchers {
   implicitly[Witness.`"a"`.T =:= symbToStr.Out]
 
   "symbolToString" should "work" in {
-    sameTyped[Witness.`"a"`.T](symbolToString(Symbol("a")))("a".narrow) should be (())
+    sameTyped[Witness.`"a"`.T](symbolToString('a))("a".narrow) should be (())
     sameTyped(symbolToString(Symbol("a")))("a".narrow) should be (())
   }
 }
