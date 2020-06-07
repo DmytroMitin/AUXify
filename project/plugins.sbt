@@ -1,7 +1,7 @@
 resolvers += Resolver.sonatypeRepo("releases")
 
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "2.4")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.2")
 
-addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.1")
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.1")
 
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.5")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.16")

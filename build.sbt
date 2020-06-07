@@ -1,9 +1,9 @@
-lazy val scala213 = "2.13.0"
-lazy val scala212 = "2.12.8" // waiting for semanticdb-scalac for 2.12.9
+lazy val scala213 = "2.13.2"
+lazy val scala212 = "2.12.11"
 lazy val scala211 = "2.11.12"
 lazy val scala210 = "2.10.7"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211, scala210)
-lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" % Test
+lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.1.2" % Test
 
 ThisBuild / name                 := "auxify"
 ThisBuild / organization         := "com.github.dmytromitin"
@@ -27,7 +27,6 @@ ThisBuild / homepage := Some(url("https://github.com/DmytroMitin/AUXify"))
   // Remove all additional repository other than Maven Central from POM
 ThisBuild / pomIncludeRepository := { _ => false }
 ThisBuild / publishMavenStyle := true
-ThisBuild / useGpg := true
 ThisBuild / credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
 ThisBuild / publishTo := {
   val nexus = "https://oss.sonatype.org/"
@@ -36,13 +35,24 @@ ThisBuild / publishTo := {
 }
 
 lazy val root = (project in file("."))
-  .aggregate(macros, macrosTests, metaCore212, metaCore213, metaRules, metaTests, metaUnitTests, syntacticMeta, syntacticMetaTests)
+  .aggregate(
+    macros,
+    macrosTests,
+    metaCoreScalafix,
+    metaCoreScalameta,
+    metaRules,
+    metaTests,
+    metaUnitTests,
+    syntacticMeta,
+    syntacticMetaTests
+  )
   .settings(
     crossScalaVersions := Nil,
     publish / skip := true,
   )
 
 // ======================= MACROS ================================
+lazy val macroCompatV = "1.1.1"
 
 lazy val macrosCommonSettings = Seq(
   crossScalaVersions := supportedScalaVersions,
@@ -64,11 +74,11 @@ lazy val macrosCommonSettings = Seq(
   libraryDependencies ++= (
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, v)) if v >= 13 => Seq(
-        "org.typelevel" % "macro-compat_2.13.0-RC2" % "1.1.1",
+        "org.typelevel" % "macro-compat_2.13.0-RC2" % macroCompatV,
       )
       case _                       => Seq(
         compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
-        "org.typelevel" %% "macro-compat" % "1.1.1",
+        "org.typelevel" %% "macro-compat" % macroCompatV,
       )
     }
   ) ++ Seq(
@@ -94,8 +104,8 @@ lazy val macrosTests = (project in file("macros-tests")).dependsOn(macros).setti
 lazy val V = _root_.scalafix.sbt.BuildInfo
 
 lazy val metaCommonSettings = Seq(
-  crossScalaVersions := Seq(V.scala212),
-  scalaVersion := V.scala212,
+  crossScalaVersions := Seq(V.scala213, V.scala212, V.scala211),
+  scalaVersion := V.scala213,
   addCompilerPlugin(scalafixSemanticdb),
   scalacOptions ++= List(
     "-Yrangepos",
@@ -103,7 +113,7 @@ lazy val metaCommonSettings = Seq(
   )
 )
 
-lazy val metaCore212 = (project in file("meta-core-2.12"))
+lazy val metaCoreScalafix = (project in file("meta-core-scalafix"))
   .settings(
     name := "auxify-meta-core",
     scalaSource in Compile := baseDirectory.value / ".." / "meta-core" / "src" / "main" / "scala",
@@ -120,7 +130,7 @@ lazy val metaRules = (project in file("meta"))
   )
 
 lazy val metaIn = (project in file("meta-in"))
-  .dependsOn(metaCore212)
+  .dependsOn(metaCoreScalafix)
   .settings(
     name := "auxify-meta-in",
     publish / skip := true,
@@ -128,7 +138,7 @@ lazy val metaIn = (project in file("meta-in"))
   )
 
 lazy val metaOut = (project in file("meta-out"))
-  .dependsOn(metaCore212) // for import and if meta annotation is not expanded // TODO #15
+  .dependsOn(metaCoreScalafix) // for import and if meta annotation is not expanded // TODO #15
   .settings(
     name := "auxify-meta-out",
     sourceGenerators.in(Compile) += Def.taskDyn {
@@ -150,7 +160,7 @@ lazy val metaOut = (project in file("meta-out"))
   )
 
 lazy val metaOutExpectedForTests = (project in file("meta-out-expected-for-tests"))
-  .dependsOn(metaCore212) // for import statement and if meta annotation is not expanded // TODO #15
+  .dependsOn(metaCoreScalafix) // for import statement and if meta annotation is not expanded // TODO #15
   .settings(
     name := "auxify-out-expected-for-tests",
     skip in publish := true,
@@ -190,11 +200,11 @@ lazy val metaUnitTests = (project in file("meta-unit-tests"))
 // ======================= SYNTACTIC META ================================
 
 lazy val syntacticMetaCommonSettings = Seq(
-  crossScalaVersions := Seq(scala213, scala212),
+  crossScalaVersions := Seq(scala213, scala212, scala211),
   scalaVersion := scala213,
 )
 
-lazy val metaCore213 = (project in file("meta-core-2.13"))
+lazy val metaCoreScalameta = (project in file("meta-core-scalameta"))
   .settings(
     name := "auxify-meta-core",
     scalaSource in Compile := baseDirectory.value / ".." / "meta-core" / "src" / "main" / "scala",
@@ -205,13 +215,13 @@ lazy val syntacticMeta = (project in file("syntactic-meta"))
   .settings(
     name := "auxify-syntactic-meta",
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "scalameta" % "4.2.0",
+      "org.scalameta" %% "scalameta" % "4.3.14",
     ),
     syntacticMetaCommonSettings,
   )
 
 lazy val syntacticMetaIn = (project in file("syntactic-meta-in"))
-  .dependsOn(metaCore213)
+  .dependsOn(metaCoreScalameta)
   .settings(
     name := "auxify-syntactic-meta-in",
     syntacticMetaCommonSettings,
@@ -219,7 +229,7 @@ lazy val syntacticMetaIn = (project in file("syntactic-meta-in"))
   )
 
 lazy val syntacticMetaOut = (project in file("syntactic-meta-out"))
-  .dependsOn(metaCore213) // for import statement and if meta annotation is not expanded // TODO #15
+  .dependsOn(metaCoreScalameta) // for import statement and if meta annotation is not expanded // TODO #15
   .settings(
     name := "auxify-syntactic-meta-out",
     sourceGenerators in Compile += Def.task {
