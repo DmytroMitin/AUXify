@@ -8,23 +8,26 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 class StringSymbolTest extends AnyFlatSpec with Matchers {
 
-  implicitly[StringToSymbol.Aux[Witness.`"a"`.T, Witness.`'a`.T]]
-  val strToSymb = s_the[StringToSymbol[Witness.`"a"`.T]]
-  implicitly[strToSymb.Out =:= Witness.`'a`.T]
-  implicitly[Witness.`'a`.T =:= strToSymb.Out]
+  type Str = Witness.`"a"`.T
+  type Symb = Witness.`'a`.T
+
+  implicitly[StringToSymbol.Aux[Str, Symb]]
+  val strToSymb = s_the[StringToSymbol[Str]]
+  implicitly[strToSymb.Out =:= Symb]
+  implicitly[Symb =:= strToSymb.Out]
 
   "stringToSymbol" should "work" in {
-    sameTyped[Witness.`'a`.T](stringToSymbol("a"))(Symbol("a").narrow) should be (())
+    sameTyped[Symb](stringToSymbol("a"))(Symbol("a").narrow) should be (())
     sameTyped(stringToSymbol("a"))(Symbol("a").narrow) should be (())
   }
 
-  implicitly[SymbolToString.Aux[Witness.`'a`.T, Witness.`"a"`.T]]
-  val symbToStr = s_the[SymbolToString[Witness.`'a`.T]]
-  implicitly[symbToStr.Out =:= Witness.`"a"`.T]
-  implicitly[Witness.`"a"`.T =:= symbToStr.Out]
+  implicitly[SymbolToString.Aux[Symb, Str]]
+  val symbToStr = s_the[SymbolToString[Symb]]
+  implicitly[symbToStr.Out =:= Str]
+  implicitly[Str =:= symbToStr.Out]
 
   "symbolToString" should "work" in {
-    sameTyped[Witness.`"a"`.T](symbolToString('a))("a".narrow) should be (())
+    sameTyped[Str](symbolToString('a))("a".narrow) should be (())
     sameTyped(symbolToString(Symbol("a")))("a".narrow) should be (())
   }
 }

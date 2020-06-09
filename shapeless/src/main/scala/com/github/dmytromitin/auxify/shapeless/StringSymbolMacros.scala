@@ -8,7 +8,7 @@ import scala.reflect.macros.whitebox
 class StringSymbolMacros(val c: whitebox.Context) extends SingletonTypeUtils {
   import c.universe._
 
-  def mkStringToSymbol[S <: String with Singleton : WeakTypeTag]: Tree = {
+  def mkStringToSymbolImpl[S <: String /*with Singleton*/ : WeakTypeTag]: Tree = {
     val typ = weakTypeOf[S]
     val symbolType = SingletonSymbolType.unrefine(typ) match {
       case ConstantType(Constant(s: String)) => SingletonSymbolType(s)
@@ -17,26 +17,42 @@ class StringSymbolMacros(val c: whitebox.Context) extends SingletonTypeUtils {
     q"_root_.com.github.dmytromitin.auxify.shapeless.StringToSymbol.instance[$typ, $symbolType]()"
   }
 
-  def mkSymbolToString[S <: scala.Symbol : WeakTypeTag]: Tree = {
+  def mkSymbolToStringImpl[S <: scala.Symbol : WeakTypeTag]: Tree = {
     val typ = weakTypeOf[S]
-    val stringType = typ match {
+    val stringType = typ/*.dealias*/ match {
       case SingletonSymbolType(s) => internal.constantType(Constant(s))
       case _ => c.abort(c.enclosingPosition, s"$typ=${showRaw(typ)} is not symbol singleton type")
     }
     q"_root_.com.github.dmytromitin.auxify.shapeless.SymbolToString.instance[$typ, $stringType]()"
   }
 
-  def stringToSymbol(s: Tree): Tree = {
+  def stringToSymbolImpl(s: Tree): Tree = {
     q"""
       import _root_.shapeless.syntax.singleton._
       _root_.com.github.dmytromitin.auxify.shapeless.`package`.stringToSymbolHlp($s.narrow)
     """
   }
 
-  def symbolToString(s: Tree): Tree = {
+  def symbolToStringImpl(s: Tree): Tree = {
     q"""
       import _root_.shapeless.syntax.singleton._
       _root_.com.github.dmytromitin.auxify.shapeless.`package`.symbolToStringHlp($s.narrow)
     """
+  }
+
+  def symbolToStringHlpImpl[S <: scala.Symbol: WeakTypeTag](s: Tree): Tree = {
+      val sts = c.inferImplicitValue(
+        c.typecheck(tq"_root_.com.github.dmytromitin.auxify.shapeless.SymbolToString[${weakTypeOf[S]}]", mode = c.TYPEmode).tpe,
+        silent = false
+      )
+      val out = sts.tpe match {
+        case RefinedType(_, scope) => scope.head.typeSignature
+        case typ => c.abort(c.enclosingPosition, s"unexpected type $typ=${showRaw(typ)}")
+      }
+      val witness = c.inferImplicitValue(
+        c.typecheck(tq"_root_.shapeless.Witness.Aux[$out]", mode = c.TYPEmode).tpe,
+        silent = false
+      )
+      q"$witness.value"
   }
 }

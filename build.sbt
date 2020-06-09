@@ -74,7 +74,16 @@ lazy val shapeless = (project in file("shapeless")).settings(
 //    "-deprecation",
 //    "-Ymacro-debug-lite",
 //    "-Xlog-implicits",
-  ),
+  ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, v)) if v >= 11 && v <= 12 => Seq("-Ypartial-unification")
+    case _                                  => Seq()
+  }),
+  resolvers ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, v)) if v >= 11 => Seq()
+    case _                       =>
+      addSbtPlugin("org.lyranthe.sbt" % "partial-unification" % "1.1.2")
+      Seq(Classpaths.sbtPluginReleases)
+  }),
 )
 
 // ======================= MACROS ================================
