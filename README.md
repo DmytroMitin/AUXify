@@ -271,7 +271,7 @@ Meta annotation `@aux` works only with classes on contrary to macro annotation `
 ### Code generation with Scalafix
 For code generation with [Scalameta](https://scalameta.org/) + [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) + [Scalafix](https://scalacenter.github.io/scalafix/) write in `project/plugins.sbt`
 ```scala
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.16")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.17")
 ```
 and in `build.sbt`
 ```scala
@@ -322,7 +322,7 @@ Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
 ### Rewriting with Scalafix
 For using rewriting rules with [Scalameta](https://scalameta.org/) + [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) + [Scalafix](https://scalacenter.github.io/scalafix/) write in `project/plugins.sbt`
 ```scala
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.16")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.17")
 ```
 and in `build.sbt`
 ```scala
