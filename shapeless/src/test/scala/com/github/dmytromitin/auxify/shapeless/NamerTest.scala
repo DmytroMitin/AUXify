@@ -3,7 +3,7 @@ package com.github.dmytromitin.auxify.shapeless
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import shapeless.ops.record.Keys
-import shapeless.{::, HList, HNil, LabelledGeneric, Poly1, Poly2, Witness}
+import shapeless.{::, HList, HNil, Poly2, Witness}
 import shapeless.test.typed
 import shapeless.syntax.singleton._
 
@@ -64,14 +64,12 @@ class NamerTest extends AnyFlatSpec with Matchers {
   val lbl = LabelledGeneric[Foo]
   val keys = Keys[lbl.Repr].apply
 
-  val keys1 = keys.map(symbolToStringPoly)
-
   object addPoly extends Poly2 {
     implicit def cse[H <: HList, S <: String with Singleton]: Case.Aux[Holder[H], S, Holder[NameR[S] :: H]] =
       at((holder, s) => holder.add(s))
   }
 
-  val fields1 = keys1.foldLeft(Holder: Holder[HNil])(addPoly)
+  val fields1 = keys.foldLeft(Holder: Holder[HNil])(addPoly)
 
   "Namer" should "work with Symbols" in {
     typed[Witness.`"int"`.T](fields1.select("int".narrow)) should be (())
