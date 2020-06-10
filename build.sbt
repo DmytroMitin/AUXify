@@ -231,7 +231,7 @@ lazy val metaUnitTests = (project in file("meta-unit-tests"))
 // ======================= SYNTACTIC META ================================
 
 lazy val syntacticMetaCommonSettings = Seq(
-  crossScalaVersions := supportedScalaVersions,
+  crossScalaVersions := Seq(scala213, scala212, scala211),
   scalaVersion := scala213,
 )
 
@@ -248,7 +248,6 @@ lazy val syntacticMeta = (project in file("syntactic-meta"))
       "org.scalameta" %% "scalameta" % "4.3.14",
     ),
     syntacticMetaCommonSettings,
-    crossScalaVersions := Seq(scala213, scala212, scala211),
   )
 
 lazy val syntacticMetaIn = (project in file("syntactic-meta-in"))
