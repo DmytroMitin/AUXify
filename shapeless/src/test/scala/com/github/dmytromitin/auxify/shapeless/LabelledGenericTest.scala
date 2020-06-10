@@ -13,11 +13,11 @@ class LabelledGenericTest {
   implicitly[LabelledGeneric.Aux[A, Record]]
   val gen = LabelledGeneric[A]
   implicitly[gen.Repr =:= Record]
-  sameTyped[Record](gen.to(A(1, "a", true)))(field["i"](1) :: field["s"]("a") :: field["b"](true) :: HNil)
-  sameTyped[Record](gen.to(A(1, "a", true)))(("i" ->> 1) :: ("s" ->> "a") :: ("b" ->> true) :: HNil)
   type Si = Witness.`"i"`.T
   type Ss = Witness.`"s"`.T
   type Sb = Witness.`"b"`.T
+  sameTyped[Record](gen.to(A(1, "a", true)))(field[Si](1) :: field[Ss]("a") :: field[Sb](true) :: HNil)
+  sameTyped[Record](gen.to(A(1, "a", true)))(("i" ->> 1) :: ("s" ->> "a") :: ("b" ->> true) :: HNil)
   sameTyped[A](gen.from(field[Si](1) :: field[Ss]("a") :: field[Sb](true) :: HNil))(A(1, "a", true))
 
   sealed trait B
