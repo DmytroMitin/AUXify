@@ -35,14 +35,19 @@ resolvers += Resolver.sonatypeRepo("releases")
 libraryDependencies += "com.github.dmytromitin" %% "auxify-shapeless" % [LATEST VERSION]
 ```
 
-Helps to overcome Shapeless limitation that `shapeless.LabelledGeneric` is `Symbol`-based rather than `String`-based.
+Helps to overcome [Shapeless](https://github.com/milessabin/shapeless/) limitation that [`shapeless.LabelledGeneric`](https://github.com/milessabin/shapeless/wiki/Feature-overview:-shapeless-2.0.0#generic-representation-of-sealed-families-of-case-classes) is `Symbol`-based rather than `String`-based.
 
-Introduces type classes `SymbolToString`, `StringToSymbol` to convert between symbol singleton type and string singleton type.
+Introduces type classes `SymbolToString`, `StringToSymbol` to convert between symbol singleton type and string singleton type
 ```scala
 implicitly[StringToSymbol.Aux["a", Symbol @@ "a"]]
 implicitly[SymbolToString.Aux[Symbol @@ "a", "a"]]
 stringToSymbol("a") // returns Symbol("a") of type Symbol @@ "a"
 symbolToString(Symbol("a")) // returns "a" of type "a"
+```
+and `String`-based type class `com.github.dmytromitin.auxify.shapeless.LabelledGeneric`
+```scala
+case class A(i: Int, s: String, b: Boolean)
+implicitly[LabelledGeneric.Aux[A, Record.`"i" -> Int, "s" -> String, "b" -> Boolean`.T]]
 ```
 
 ## Using AUXify-Macros

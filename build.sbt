@@ -9,7 +9,7 @@ ThisBuild / name                 := "auxify"
 ThisBuild / organization         := "com.github.dmytromitin"
 ThisBuild / organizationName     := "Dmytro Mitin"
 ThisBuild / organizationHomepage := Some(url("https://github.com/DmytroMitin"))
-ThisBuild / version              := "0.7"
+ThisBuild / version              := "0.8"
 ThisBuild / scalaVersion         := scala213
 ThisBuild / scmInfo := Some(ScmInfo(
   url("https://github.com/DmytroMitin/AUXify"),
@@ -61,6 +61,7 @@ lazy val root = (project in file("."))
 lazy val shapeless = (project in file("shapeless")).settings(
   name := "auxify-shapeless",
   macrosCommonSettings,
+//  scalaVersion := scala213, // for test
   libraryDependencies ++= Seq(
     scalaOrganization.value % "scala-reflect" % scalaVersion.value,
     "com.chuusai" %% "shapeless" % (CrossVersion.partialVersion(scalaVersion.value) match {
@@ -72,12 +73,14 @@ lazy val shapeless = (project in file("shapeless")).settings(
   ),
   scalacOptions ++= Seq(
 //    "-deprecation",
+//    "-unchecked",
 //    "-Ymacro-debug-lite",
 //    "-Xlog-implicits",
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, v)) if v >= 11 && v <= 12 => Seq("-Ypartial-unification")
     case _                                  => Seq()
   }),
+  //https://stackoverflow.com/questions/24558700/using-a-2-10-only-sbt-plugin-in-a-project-thats-cross-built-against-2-9/
   resolvers ++= (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, v)) if v >= 11 => Seq()
     case _                       =>
@@ -228,7 +231,7 @@ lazy val metaUnitTests = (project in file("meta-unit-tests"))
 // ======================= SYNTACTIC META ================================
 
 lazy val syntacticMetaCommonSettings = Seq(
-  crossScalaVersions := Seq(scala213, scala212, scala211),
+  crossScalaVersions := supportedScalaVersions,
   scalaVersion := scala213,
 )
 
@@ -245,6 +248,7 @@ lazy val syntacticMeta = (project in file("syntactic-meta"))
       "org.scalameta" %% "scalameta" % "4.3.14",
     ),
     syntacticMetaCommonSettings,
+    crossScalaVersions := Seq(scala213, scala212, scala211),
   )
 
 lazy val syntacticMetaIn = (project in file("syntactic-meta-in"))

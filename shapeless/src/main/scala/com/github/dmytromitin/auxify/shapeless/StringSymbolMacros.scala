@@ -26,6 +26,7 @@ class StringSymbolMacros(val c: whitebox.Context) extends SingletonTypeUtils {
     q"_root_.com.github.dmytromitin.auxify.shapeless.SymbolToString.instance[$typ, $stringType]()"
   }
 
+  //workaround for 2.12-
   def stringToSymbolImpl(s: Tree): Tree = {
     q"""
       import _root_.shapeless.syntax.singleton._
@@ -40,6 +41,7 @@ class StringSymbolMacros(val c: whitebox.Context) extends SingletonTypeUtils {
     """
   }
 
+  //workaround for 2.10
   def symbolToStringHlpImpl[S <: scala.Symbol: WeakTypeTag](s: Tree): Tree = {
       val sts = c.inferImplicitValue(
         c.typecheck(tq"_root_.com.github.dmytromitin.auxify.shapeless.SymbolToString[${weakTypeOf[S]}]", mode = c.TYPEmode).tpe,

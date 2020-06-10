@@ -9,11 +9,11 @@ trait StringToSymbol[S <: String /*with Singleton*/] {
 }
 trait LowPriorityStringToSymbol {
   implicit def mkStringToSymbolUsingOut[S <: String /*with Singleton*/, Out <: Symbol]: StringToSymbol.Aux[S, Out] =
-  macro StringSymbolMacros.mkStringToSymbolImpl[S]
+    macro StringSymbolMacros.mkStringToSymbolImpl[S]
 }
 object StringToSymbol extends LowPriorityStringToSymbol {
   implicit def mkStringToSymbol[S <: String /*with Singleton*/]: StringToSymbol[S] =
-  macro StringSymbolMacros.mkStringToSymbolImpl[S]
+    macro StringSymbolMacros.mkStringToSymbolImpl[S]
 }
 
 @aux @apply @instance
