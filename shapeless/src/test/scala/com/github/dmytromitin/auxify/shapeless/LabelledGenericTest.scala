@@ -14,18 +14,34 @@ class LabelledGenericTest extends AnyFlatSpec with Matchers {
 
   implicitly[LabelledGeneric.Aux[A, Record]]
   implicitly[gen.Repr =:= Record]
+
   sameTyped[Record](gen.to(A(1, "a", true)))(field[Si](1) :: field[Ss]("a") :: field[Sb](true) :: HNil)
   sameTyped[Record](gen.to(A(1, "a", true)))(("i" ->> 1) :: ("s" ->> "a") :: ("b" ->> true) :: HNil)
   sameTyped[A](gen.from(field[Si](1) :: field[Ss]("a") :: field[Sb](true) :: HNil))(A(1, "a", true))
 
+  "LabelledGeneric" should "work for case classes" in {
+    gen.to(A(1, "a", true)) should be (field[Si](1) :: field[Ss]("a") :: field[Sb](true) :: HNil)
+    gen.from(field[Si](1) :: field[Ss]("a") :: field[Sb](true) :: HNil) should be (A(1, "a", true))
+  }
+
   implicitly[LabelledGeneric.Aux[B, Union]]
   implicitly[gen1.Repr =:= Union]
+
   sameTyped[Union](gen1.to(C(1)))(Inl(field[SC](C(1))))
   sameTyped[Union](gen1.to(D("a")))(Inr(Inl(field[SD](D("a")))))
   sameTyped[Union](gen1.to(E))(Inr(Inr(Inl(field[SE](E)))))
   sameTyped[B](gen1.from(Inl(field[SC](C(1)))))(C(1))
   sameTyped[B](gen1.from(Inr(Inl(field[SD](D("a"))))))(D("a"))
   sameTyped[B](gen1.from(Inr(Inr(Inl(field[SE](E))))))(E)
+
+  "LabelledGeneric" should "work for sealed traits" in {
+    gen1.to(C(1)) should be (Inl(field[SC](C(1))))
+    gen1.to(D("a")) should be (Inr(Inl(field[SD](D("a")))))
+    gen1.to(E) should be (Inr(Inr(Inl(field[SE](E)))))
+    gen1.from(Inl(field[SC](C(1)))) should be (C(1))
+    gen1.from(Inr(Inl(field[SD](D("a"))))) should be (D("a"))
+    gen1.from(Inr(Inr(Inl(field[SE](E))))) should be (E)
+  }
 }
 
 object LabelledGenericTest {

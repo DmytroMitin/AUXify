@@ -16,9 +16,11 @@ class StringSymbolTest extends AnyFlatSpec with Matchers {
   implicitly[strToSymb.Out =:= Symb]
   implicitly[Symb =:= strToSymb.Out]
 
+  sameTyped[Symb](stringToSymbol("a"))(Symbol("a").narrow)
+  sameTyped(stringToSymbol("a"))(Symbol("a").narrow)
+
   "stringToSymbol" should "work" in {
-    sameTyped[Symb](stringToSymbol("a"))(Symbol("a").narrow) should be (())
-    sameTyped(stringToSymbol("a"))(Symbol("a").narrow) should be (())
+    stringToSymbol("a") === Symbol("a") should be (true)
   }
 
   implicitly[SymbolToString.Aux[Symb, Str]]
@@ -26,8 +28,11 @@ class StringSymbolTest extends AnyFlatSpec with Matchers {
   implicitly[symbToStr.Out =:= Str]
   implicitly[Str =:= symbToStr.Out]
 
+  sameTyped[Str](symbolToString('a))("a".narrow)
+  sameTyped[Str](symbolToString(Symbol("a")))("a".narrow)
+  sameTyped(symbolToString(Symbol("a")))("a".narrow)
+
   "symbolToString" should "work" in {
-    sameTyped[Str](symbolToString('a))("a".narrow) should be (())
-    sameTyped(symbolToString(Symbol("a")))("a".narrow) should be (())
+    symbolToString(Symbol("a")) should be ("a")
   }
 }

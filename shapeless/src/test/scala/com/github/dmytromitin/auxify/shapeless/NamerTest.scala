@@ -57,9 +57,7 @@ class NamerTest extends AnyFlatSpec with Matchers {
 
   val fields = Holder.add("int".narrow).add("long".narrow)
 
-  "Namer" should "work with Strings" in {
-    typed[Witness.`"int"`.T](fields.select("int".narrow)) should be (())
-  }
+  typed[Witness.`"int"`.T](fields.select("int".narrow))
 
   val lbl = LabelledGeneric[Foo]
   val keys = Keys[lbl.Repr].apply
@@ -71,9 +69,7 @@ class NamerTest extends AnyFlatSpec with Matchers {
 
   val fields1 = keys.foldLeft(Holder: Holder[HNil])(addPoly)
 
-  "Namer" should "work with Symbols" in {
-    typed[Witness.`"int"`.T](fields1.select("int".narrow)) should be (())
-  }
+  typed[Witness.`"int"`.T](fields1.select("int".narrow))
 }
 
 object NamerTest {
