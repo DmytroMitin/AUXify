@@ -12,6 +12,8 @@ import scala.annotation.implicitNotFound
 //https://gitter.im/milessabin/shapeless?at=5ed9e05922dd444224fd20cd
 //https://gitter.im/milessabin/shapeless?at=5ee0f11aee693d6eb3b770f7
 class NamerTest extends AnyFlatSpec with Matchers {
+  import NamerTest._
+
   trait Name {
     type R <: String
     val name: R
@@ -59,8 +61,6 @@ class NamerTest extends AnyFlatSpec with Matchers {
     typed[Witness.`"int"`.T](fields.select("int".narrow)) should be (())
   }
 
-  final case class Foo(int: Int, long: Long)
-
   val lbl = LabelledGeneric[Foo]
   val keys = Keys[lbl.Repr].apply
 
@@ -74,4 +74,8 @@ class NamerTest extends AnyFlatSpec with Matchers {
   "Namer" should "work with Symbols" in {
     typed[Witness.`"int"`.T](fields1.select("int".narrow)) should be (())
   }
+}
+
+object NamerTest {
+  final case class Foo(int: Int, long: Long)
 }
