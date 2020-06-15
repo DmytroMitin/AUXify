@@ -37,9 +37,9 @@ object LabelledGeneric extends LowPriorityLabelledGeneric {
 //   ev: R <:< V
 //  ): Aux[T, R] = instance(t => zip(gen.to(t)), r => gen.from(r))
 
-//  implicit def sealedTrait[T, C <: Coproduct, C1 <: Coproduct](implicit
-//    gen: SLabelledGeneric.Aux[T, C],
-//    sts: union.SymbolsToStrings.Aux[C, C1],
-//    sts1: union.StringsToSymbols.Aux[C1, C]
-//  ): Aux[T, C1] = instance(t => sts(gen.to(t)), c => gen.from(sts1(c)))
+  implicit def sealedTrait[T, C <: Coproduct, C1 <: Coproduct](implicit
+    gen: SLabelledGeneric.Aux[T, C],
+    sts: union.SymbolsToStrings.Aux[C, C1],
+    sts1: union.StringsToSymbols.Aux[C1, C]
+  ): Aux[T, C1] = instance(t => sts.symbolsToStrings(gen.to(t)), c => gen.from(sts1.stringsToSymbols(c)))
 }

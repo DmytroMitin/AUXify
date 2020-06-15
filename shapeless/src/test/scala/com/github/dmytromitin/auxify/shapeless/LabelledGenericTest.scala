@@ -9,6 +9,13 @@ import shapeless.test.sameTyped
 import shapeless.syntax.singleton._
 import shapeless.labelled.field
 
+
+sealed trait B
+case class C(i: Int) extends B
+case class D(s: String) extends B
+case object E extends B
+
+
 class LabelledGenericTest extends AnyFlatSpec with Matchers {
   import LabelledGenericTest._
 
@@ -25,24 +32,24 @@ class LabelledGenericTest extends AnyFlatSpec with Matchers {
     gen.from(field[Si](1) :: field[Ss]("a") :: field[Sb](true) :: HNil) should be (A(1, "a", true))
   }
 
-//  implicitly[LabelledGeneric.Aux[B, Union]]
-//  implicitly[gen1.Repr =:= Union]
-//
-//  sameTyped[Union](gen1.to(C(1)))(Inl(field[SC](C(1))))
-//  sameTyped[Union](gen1.to(D("a")))(Inr(Inl(field[SD](D("a")))))
-//  sameTyped[Union](gen1.to(E))(Inr(Inr(Inl(field[SE](E)))))
-//  sameTyped[B](gen1.from(Inl(field[SC](C(1)))))(C(1))
-//  sameTyped[B](gen1.from(Inr(Inl(field[SD](D("a"))))))(D("a"))
-//  sameTyped[B](gen1.from(Inr(Inr(Inl(field[SE](E))))))(E)
-//
-//  "LabelledGeneric" should "work for sealed traits" in {
-//    gen1.to(C(1)) should be (Inl(field[SC](C(1))))
-//    gen1.to(D("a")) should be (Inr(Inl(field[SD](D("a")))))
-//    gen1.to(E) should be (Inr(Inr(Inl(field[SE](E)))))
-//    gen1.from(Inl(field[SC](C(1)))) should be (C(1))
-//    gen1.from(Inr(Inl(field[SD](D("a"))))) should be (D("a"))
-//    gen1.from(Inr(Inr(Inl(field[SE](E))))) should be (E)
-//  }
+  implicitly[LabelledGeneric.Aux[B, Union]]
+  implicitly[gen1.Repr =:= Union]
+
+  sameTyped[Union](gen1.to(C(1): B))(Inl(field[SC](C(1))))
+  sameTyped[Union](gen1.to(D("a"): B))(Inr(Inl(field[SD](D("a")))))
+  sameTyped[Union](gen1.to(E: B))(Inr(Inr(Inl(field[SE](E)))))
+  sameTyped[B](gen1.from(Inl(field[SC](C(1)))))(C(1))
+  sameTyped[B](gen1.from(Inr(Inl(field[SD](D("a"))))))(D("a"))
+  sameTyped[B](gen1.from(Inr(Inr(Inl(field[SE](E))))))(E)
+
+  "LabelledGeneric" should "work for sealed traits" in {
+    gen1.to(C(1): B) should be (Inl(field[SC](C(1))))
+    gen1.to(D("a"): B) should be (Inr(Inl(field[SD](D("a")))))
+    gen1.to(E: B) should be (Inr(Inr(Inl(field[SE](E)))))
+    gen1.from(Inl(field[SC](C(1)))) should be (C(1))
+    gen1.from(Inr(Inl(field[SD](D("a"))))) should be (D("a"))
+    gen1.from(Inr(Inr(Inl(field[SE](E))))) should be (E)
+  }
 }
 
 object LabelledGenericTest {
@@ -55,12 +62,8 @@ object LabelledGenericTest {
   type Ss = Witness.`"s"`.T
   type Sb = Witness.`"b"`.T
 
-  sealed trait B
-  case class C(i: Int) extends B
-  case class D(s: String) extends B
-  case object E extends B
   type Union = Union.`"C" -> C, "D" -> D, "E" -> E.type`.T
-//  val gen1 = LabelledGeneric[B]
+  val gen1 = LabelledGeneric[B]
   type SC = Witness.`"C"`.T
   type SD = Witness.`"D"`.T
   type SE = Witness.`"E"`.T
