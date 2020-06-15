@@ -1,16 +1,16 @@
 package com.github.dmytromitin.auxify.shapeless
 
-import com.github.dmytromitin.auxify.macros.{apply, aux, instance}
+import com.github.dmytromitin.auxify.macros.{apply, aux, instance, syntax}
 import shapeless.labelled.{FieldType, field}
 import shapeless.{::, DepFn1, HList, HNil, Witness}
 import shapeless.ops.record.UnzipFields
 import shapeless.ops.hlist.ZipWithKeys
 
 object record {
-  @aux @apply @instance
-  trait StringsToSymbols[L <: HList] extends DepFn1[L] {
+  @aux @apply @instance @syntax
+  trait StringsToSymbols[L <: HList] /*extends DepFn1[L]*/ {
     type Out <: HList
-    def apply(l: L): Out
+    def stringsToSymbols(l: L): Out
   }
   object StringsToSymbols {
     implicit def mkStringsToSymbols[L <: HList, K <: HList, V <: HList, K1 <: HList, Out <: HList](implicit
@@ -21,10 +21,10 @@ object record {
 //    instance(l => l.asInstanceOf[zip.Out]) // more efficient
   }
 
-  @aux @apply @instance
-  trait SymbolsToStrings[L <: HList] extends DepFn1[L] {
+  @aux @apply @instance @syntax
+  trait SymbolsToStrings[L <: HList] /*extends DepFn1[L]*/ {
     type Out <: HList
-    def apply(l: L): Out {}
+    def symbolsToStrings(l: L): Out
   }
   object SymbolsToStrings {
 //    implicit def mkSymbolsToStrings[L <: HList, K <: HList, V <: HList, K1 <: HList, Out <: HList](implicit
@@ -38,7 +38,7 @@ object record {
 
     implicit def hconsSymbolsToStrings[K <: Symbol, V, T <: HList, K1 <: String, Out <: HList]
     (implicit sts: SymbolToString.Aux[K, K1], sts1: SymbolsToStrings.Aux[T, Out]): Aux[FieldType[K, V] :: T, FieldType[K1, V] :: Out] =
-      instance(l => field[K1](l.head: V) :: sts1(l.tail))
+      instance(l => field[K1](l.head: V) :: sts1.symbolsToStrings(l.tail))
   }
 
 //  @aux @apply @instance

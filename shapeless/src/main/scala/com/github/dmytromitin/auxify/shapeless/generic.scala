@@ -26,7 +26,7 @@ object LabelledGeneric extends LowPriorityLabelledGeneric {
     sts: record.SymbolsToStrings.Aux[L, L1],
     sts1: record.StringsToSymbols.Aux[L1, L/*L2*/]
 // ,ev: L2 <:< L
-  ): Aux[T, L1] = instance(t => sts(gen.to(t)), l => gen.from(sts1(l)))
+  ): Aux[T, L1] = instance(t => sts.symbolsToStrings(gen.to(t)), l => gen.from(sts1.stringsToSymbols(l)))
 
 //  implicit def caseClass[T, K <: HList, K1 <: HList, V <: HList, R <: HList]
 //  (implicit
