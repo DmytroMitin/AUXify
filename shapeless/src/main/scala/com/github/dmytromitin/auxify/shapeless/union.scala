@@ -1,15 +1,15 @@
 package com.github.dmytromitin.auxify.shapeless
 
-import com.github.dmytromitin.auxify.macros.{apply, aux, instance}
+import com.github.dmytromitin.auxify.macros.{apply, aux, instance, syntax}
 import shapeless.{Coproduct, DepFn1, HList}
 import shapeless.ops.union.UnzipFields
 import shapeless.ops.coproduct.ZipWithKeys
 
 object union {
-  @aux @apply @instance
-  trait StringsToSymbols[C <: Coproduct] extends DepFn1[C] {
+  @aux @apply @instance @syntax
+  trait StringsToSymbols[C <: Coproduct] /*extends DepFn1[C]*/ {
     type Out <: Coproduct
-    def apply(c: C): Out
+    def stringsToSymbols(c: C): Out
   }
   object StringsToSymbols {
     implicit def mkStringsToSymbols[C <: Coproduct, K <: HList, V <: Coproduct, K1 <: HList](implicit
@@ -20,10 +20,10 @@ object union {
     //    instance(l => l.asInstanceOf[zip.Out]) // more efficient
   }
 
-  @aux @apply @instance
-  trait SymbolsToStrings[C <: Coproduct] extends DepFn1[C] {
+  @aux @apply @instance @syntax
+  trait SymbolsToStrings[C <: Coproduct] /*extends DepFn1[C]*/ {
     type Out <: Coproduct
-    def apply(c: C): Out
+    def symbolsToStrings(c: C): Out
   }
   object SymbolsToStrings {
     implicit def mkSymbolsToStrings[C <: Coproduct, K <: HList, V <: Coproduct, K1 <: HList](implicit
