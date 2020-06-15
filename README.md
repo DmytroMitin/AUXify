@@ -50,6 +50,32 @@ and `String`-based type class `com.github.dmytromitin.auxify.shapeless.LabelledG
 case class A(i: Int, s: String, b: Boolean)
 implicitly[LabelledGeneric.Aux[A, Record.`"i" -> Int, "s" -> String, "b" -> Boolean`.T]]
 ```
+Also there are convenient syntaxes
+```scala
+import com.github.dmytromitin.auxify.shapeless.hlist._
+import StringsToSymbols.syntax._
+("a".narrow :: "b".narrow :: "c".narrow :: HNil).stringsToSymbols // 'a.narrow :: 'b.narrow :: 'c.narrow :: HNil
+import SymbolsToStrings.syntax._
+('a.narrow :: 'b.narrow :: 'c.narrow :: HNil).symbolsToStrings // "a".narrow :: "b".narrow :: "c".narrow :: HNil
+
+import com.github.dmytromitin.auxify.shapeless.coproduct._
+import StringsToSymbols.syntax._
+(Inr(Inr(Inl("c".narrow))) : "a" :+: "b" :+: "c" :+: CNil).stringsToSymbols // Inr(Inr(Inl('c.narrow))) : (Symbol @@ "a") :+: (Symbol @@ "b") :+: (Symbol @@ "c") :+: CNil
+import SymbolsToStrings.syntax._
+(Inr(Inr(Inl('c.narrow))) : (Symbol @@ "a") :+: (Symbol @@ "b") :+: (Symbol @@ "c") :+: CNil).symbolsToStrings // Inr(Inr(Inl("c".narrow))) : "a" :+: "b" :+: "c" :+: CNil
+
+import com.github.dmytromitin.auxify.shapeless.record._
+import StringsToSymbols.syntax._
+(field["a"](1) :: field["b"]("s") :: field["c"](true) :: HNil).stringsToSymbols // field[Symbol @@ "a"](1) :: field[Symbol @@ "b"]("s") :: field[Symbol @@ "c"](true) :: HNil
+import SymbolsToStrings.syntax._
+(field[Symbol @@ "a"](1) :: field[Symbol @@ "b"]("s") :: field[Symbol @@ "c"](true) :: HNil).symbolsToStrings // field["a"](1) :: field["b"]("s") :: field["c"](true) :: HNil
+
+import com.github.dmytromitin.auxify.shapeless.union._
+import StringsToSymbols.syntax._
+(Inr(Inr(Inl(field["c"](true)))): Union.`"a" -> Int, "b" -> String, "c" -> Boolean`.T).stringsToSymbols // Inr(Inr(Inl(field[Witness.`'c`.T](true)))): Union.`'a -> Int, 'b -> String, 'c -> Boolean`.T
+import SymbolsToStrings.syntax._
+(Inr(Inr(Inl(field[Symbol @@ "c"](true)))): Union.`'a -> Int, 'b -> String, 'c -> Boolean`.T).symbolsToStrings // Inr(Inr(Inl(field[Witness.`"c"`.T](true)))): Union.`"a" -> Int, "b" -> String, "c" -> Boolean`.T
+```
 
 ## Using AUXify-Macros
 Write in `build.sbt`
