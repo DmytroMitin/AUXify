@@ -16,8 +16,8 @@ object record {
     implicit def mkStringsToSymbols[L <: HList, K <: HList, V <: HList, K1 <: HList, Out <: HList](implicit
       unzip: UnzipFields.Aux[L, K, V],
       sts: hlist.StringsToSymbols.Aux[K, K1],
-      zip: ZipWithKeys.Aux[K1, V, Out]
-    ): Aux[L, /*zip.Out*/Out] = instance(l => zip(unzip.values(l)))
+      zip: ZipWithKeys/*.Aux*/[K1, V/*, Out*/]
+    ): Aux[L, zip.Out/*Out*/] = instance(l => zip(unzip.values(l)))
 //    instance(l => l.asInstanceOf[zip.Out]) // more efficient
   }
 
@@ -27,18 +27,19 @@ object record {
     def symbolsToStrings(l: L): Out
   }
   object SymbolsToStrings {
-//    implicit def mkSymbolsToStrings[L <: HList, K <: HList, V <: HList, K1 <: HList, Out <: HList](implicit
-//      unzip: UnzipFields.Aux[L, K, V],
-//      sts: hlist.SymbolsToStrings.Aux[K, K1],
-//      zip: ZipWithKeys.Aux[K1, V, Out]
-//    ): Aux[L, /*zip.Out*/Out {}] = instance(l => zip(unzip.values(l)))
-//    //    instance(l => l.asInstanceOf[zip.Out]) // more efficient
+    implicit def mkSymbolsToStrings[L <: HList, K <: HList, V <: HList, K1 <: HList, Out <: HList](implicit
+      unzip: UnzipFields.Aux[L, K, V],
+      sts: hlist.SymbolsToStrings.Aux[K, K1],
+      zip: ZipWithKeys/*.Aux*/[K1, V/*, Out*/]
+    ): Aux[L, zip.Out/*Out*/] = instance(l => zip(unzip.values(l)))
+    //    instance(l => l.asInstanceOf[zip.Out]) // more efficient
 
-    implicit val hnilSymbolsToStrings: Aux[HNil, HNil] = instance(_ => HNil)
-
-    implicit def hconsSymbolsToStrings[K <: Symbol, V, T <: HList, K1 <: String, Out <: HList]
-    (implicit sts: SymbolToString.Aux[K, K1], sts1: SymbolsToStrings.Aux[T, Out]): Aux[FieldType[K, V] :: T, FieldType[K1, V] :: Out] =
-      instance(l => field[K1](l.head: V) :: sts1.symbolsToStrings(l.tail))
+    //also ok
+//    implicit val hnilSymbolsToStrings: Aux[HNil, HNil] = instance(_ => HNil)
+//
+//    implicit def hconsSymbolsToStrings[K <: Symbol, V, T <: HList, K1 <: String, Out <: HList]
+//    (implicit sts: SymbolToString.Aux[K, K1], sts1: SymbolsToStrings.Aux[T, Out]): Aux[FieldType[K, V] :: T, FieldType[K1, V] :: Out] =
+//      instance(l => field[K1](l.head: V) :: sts1.symbolsToStrings(l.tail))
   }
 
 //  @aux @apply @instance
