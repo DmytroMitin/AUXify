@@ -5,6 +5,7 @@ import shapeless.test.sameTyped
 import shapeless.syntax.singleton._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.flatspec.AnyFlatSpec
+import shapeless.tag.{@@, Tagged}
 
 class StringSymbolTest extends AnyFlatSpec with Matchers {
 
@@ -23,6 +24,17 @@ class StringSymbolTest extends AnyFlatSpec with Matchers {
     stringToSymbol("a") === Symbol("a") should be (true)
   }
 
+  implicitly[Witness.Aux[Symb]]
+  implicitly[Witness.Aux[Witness.`'a`.T]]
+  implicitly[Witness.Aux[Symbol @@ Str]]
+  implicitly[Witness.Aux[Symbol @@ Witness.`"a"`.T]]
+  implicitly[Witness.Aux[Symbol with Tagged[Str]]]
+  type Smbl = Symbol
+  type Tgd[A] = Tagged[A]
+  implicitly[Witness.Aux[Smbl with Tgd[Str]]]
+  implicitly[Witness.Aux[Symbol with Tagged[Witness.`"a"`.T]]]
+
+  implicitly[SymbolToString.Aux[Symb, Witness.`"a"`.T]]
   implicitly[SymbolToString.Aux[Symb, Str]]
   val symbToStr = s_the[SymbolToString[Symb]]
   implicitly[symbToStr.Out =:= Str]

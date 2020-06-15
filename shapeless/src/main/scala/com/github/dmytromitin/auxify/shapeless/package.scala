@@ -6,7 +6,7 @@ package object shapeless {
 
   import scala.language.experimental.macros
 
-  def stringToSymbolHlp[S <: String /*with Singleton*/ , S1 <: Symbol](s: S)(implicit
+  def stringToSymbolHlp[S <: String /*with Singleton*/, S1 <: Symbol](s: S)(implicit
                                                                              sts: StringToSymbol.Aux[S, S1],
                                                                              witness: Witness.Aux[S1]): S1 = witness.value
 

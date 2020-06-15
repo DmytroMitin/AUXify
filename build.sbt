@@ -61,21 +61,26 @@ lazy val root = (project in file("."))
 lazy val shapeless = (project in file("shapeless")).settings(
   name := "auxify-shapeless",
   macrosCommonSettings,
-//  scalaVersion := scala213, // for test
+//  scalaVersion := scala210, // for test
   libraryDependencies ++= Seq(
     scalaOrganization.value % "scala-reflect" % scalaVersion.value,
-    "com.chuusai" %% "shapeless" % (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, v)) if v >= 11 => "2.4.0-M1"
-      case _                       => "2.3.3"
-    }),
     organization.value %% "auxify-macros" % previousVersion(version.value),
     scalaTest,
-  ),
+  ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, v)) if v >= 11 =>
+//      Seq("com.chuusai" %% "shapeless" % "2.4.0-M1")
+      Seq() //lib-2.11 ...
+    case _                       =>
+//      Seq("com.chuusai" %% "shapeless" % "2.3.3")
+//      Seq("com.chuusai" %% "shapeless" % "2.4.0-SNAPSHOT")
+      Seq() //lib-2.10
+  }),
   scalacOptions ++= Seq(
 //    "-deprecation",
 //    "-unchecked",
 //    "-Ymacro-debug-lite",
-//    "-Xlog-implicits",
+    "-Xlog-implicits",
+//    "-Ylog-classpath",
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, v)) if v >= 11 && v <= 12 => Seq("-Ypartial-unification")
     case _                                  => Seq()
@@ -87,6 +92,10 @@ lazy val shapeless = (project in file("shapeless")).settings(
       addSbtPlugin("org.lyranthe.sbt" % "partial-unification" % "1.1.2")
       Seq(Classpaths.sbtPluginReleases)
   }),
+  unmanagedBase := baseDirectory.value / (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, v)) => s"lib-2.$v"
+    case _            => "lib"
+  })
 )
 
 // ======================= MACROS ================================
