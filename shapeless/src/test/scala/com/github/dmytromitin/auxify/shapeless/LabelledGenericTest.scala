@@ -57,7 +57,7 @@ object LabelledGenericTest {
   type Record = Record.`"i" -> Int, "s" -> String, "b" -> Boolean`.T
   implicitly[Generic.Aux[A, Int :: String :: Boolean :: HNil]]
   Generic[A]
-  val gen = LabelledGeneric[A]/*()*/
+  val gen = LabelledGeneric[A]
   type Si = Witness.`"i"`.T
   type Ss = Witness.`"s"`.T
   type Sb = Witness.`"b"`.T

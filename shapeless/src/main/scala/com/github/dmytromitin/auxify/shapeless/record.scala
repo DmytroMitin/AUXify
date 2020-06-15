@@ -8,7 +8,7 @@ import shapeless.ops.hlist.ZipWithKeys
 
 object record {
   @aux @apply @instance @syntax
-  trait StringsToSymbols[L <: HList] /*extends DepFn1[L]*/ {
+  trait StringsToSymbols[L <: HList] {
     type Out <: HList
     def stringsToSymbols(l: L): Out
   }
@@ -22,7 +22,7 @@ object record {
   }
 
   @aux @apply @instance @syntax
-  trait SymbolsToStrings[L <: HList] /*extends DepFn1[L]*/ {
+  trait SymbolsToStrings[L <: HList] {
     type Out <: HList
     def symbolsToStrings(l: L): Out
   }

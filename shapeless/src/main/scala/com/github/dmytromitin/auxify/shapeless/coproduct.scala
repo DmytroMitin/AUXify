@@ -6,26 +6,31 @@ import shapeless.{:+:, CNil, Coproduct, DepFn1, Inl, Inr, Poly, poly}
 
 object coproduct {
   @aux @apply @instance @syntax
-  trait StringsToSymbols[C <: Coproduct] /*extends DepFn1[C]*/ {
+  trait StringsToSymbols[C <: Coproduct] {
     type Out <: Coproduct
     def stringsToSymbols(c: C): Out
   }
   object StringsToSymbols {
     implicit def mkStringsToSymbols[L <: Coproduct](implicit
       mapper: Mapper[stringToSymbolPoly.type, L]): Aux[L, mapper.Out] = instance(mapper(_))
+
+    //also ok
+//    implicit def mkStringsToSymbols[L <: Coproduct, Out <: Coproduct](implicit
+//      mapper: Mapper.Aux[stringToSymbolPoly.type, L, Out]): Aux[L, Out] = instance(mapper(_))
   }
 
   @aux @apply @instance @syntax
-  trait SymbolsToStrings[C <: Coproduct] /*extends DepFn1[C]*/ {
+  trait SymbolsToStrings[C <: Coproduct] {
     type Out <: Coproduct
     def symbolsToStrings(c: C): Out
   }
   object SymbolsToStrings {
-//    implicit def mkSymbolsToStrings[C <: Coproduct](implicit
-//      mapper: Mapper[symbolToStringPoly.type, C]): Aux[C, mapper.Out] = instance(mapper(_))
+    implicit def mkSymbolsToStrings[C <: Coproduct](implicit
+      mapper: Mapper[symbolToStringPoly.type, C]): Aux[C, mapper.Out] = instance(mapper(_))
 
-    implicit def mkSymbolsToStrings[C <: Coproduct, Out <: Coproduct](implicit
-      mapper: Mapper.Aux[symbolToStringPoly.type, C, Out]): Aux[C, /*mapper.Out*/Out] = instance(mapper(_))
+    //also ok
+//    implicit def mkSymbolsToStrings[C <: Coproduct, Out <: Coproduct](implicit
+//      mapper: Mapper.Aux[symbolToStringPoly.type, C, Out]): Aux[C, Out] = instance(mapper(_))
   }
 
   @aux @apply @instance

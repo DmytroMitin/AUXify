@@ -1,13 +1,13 @@
 package com.github.dmytromitin.auxify.shapeless
 
 import com.github.dmytromitin.auxify.macros.{apply, aux, instance, syntax}
-import shapeless.{Coproduct, DepFn1, HList}
+import shapeless.{Coproduct, HList}
 import shapeless.ops.union.UnzipFields
 import shapeless.ops.coproduct.ZipWithKeys
 
 object union {
   @aux @apply @instance @syntax
-  trait StringsToSymbols[C <: Coproduct] /*extends DepFn1[C]*/ {
+  trait StringsToSymbols[C <: Coproduct] {
     type Out <: Coproduct
     def stringsToSymbols(c: C): Out
   }
@@ -21,7 +21,7 @@ object union {
   }
 
   @aux @apply @instance @syntax
-  trait SymbolsToStrings[C <: Coproduct] /*extends DepFn1[C]*/ {
+  trait SymbolsToStrings[C <: Coproduct] {
     type Out <: Coproduct
     def symbolsToStrings(c: C): Out
   }

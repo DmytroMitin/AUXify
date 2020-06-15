@@ -68,18 +68,18 @@ lazy val shapeless = (project in file("shapeless")).settings(
     scalaTest,
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, v)) if v >= 11 =>
-//      Seq("com.chuusai" %% "shapeless" % "2.4.0-M1")
+//      Seq("com.chuusai" %% "shapeless" % "2.4.0-M1") //patched
       Seq() //lib-2.11 ...
     case _                       =>
 //      Seq("com.chuusai" %% "shapeless" % "2.3.3")
-//      Seq("com.chuusai" %% "shapeless" % "2.4.0-SNAPSHOT")
+//      Seq("com.chuusai" %% "shapeless" % "2.4.0-SNAPSHOT") //patched
       Seq() //lib-2.10
   }),
   scalacOptions ++= Seq(
 //    "-deprecation",
 //    "-unchecked",
 //    "-Ymacro-debug-lite",
-    "-Xlog-implicits",
+//    "-Xlog-implicits",
 //    "-Ylog-classpath",
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, v)) if v >= 11 && v <= 12 => Seq("-Ypartial-unification")
