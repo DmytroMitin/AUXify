@@ -31,7 +31,7 @@ scalaVersion := "2.13.2"
 //scalaVersion := "2.11.12"
 //scalaVersion := "2.10.7"
 
-resolvers += Resolver.sonatypeRepo("releases")
+resolvers += Resolver.sonatypeRepo("public")
 
 libraryDependencies ++= Seq(
   "com.github.dmytromitin" %% "auxify-shapeless" % [LATEST VERSION],
@@ -91,7 +91,7 @@ scalaVersion := "2.13.2"
 //scalaVersion := "2.11.12"
 //scalaVersion := "2.10.7"
 
-resolvers += Resolver.sonatypeRepo("releases")
+resolvers += Resolver.sonatypeRepo("public")
 
 libraryDependencies += "com.github.dmytromitin" %% "auxify-macros" % [LATEST VERSION]
 
@@ -385,7 +385,7 @@ Rewriting can be run with `sbt "scalafix AuxRule"` (details are [here](https://s
 ### Code generation with Scalameta
 For code generating syntacticly with pure [Scalameta](https://scalameta.org/) (without [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) and [Scalafix](https://scalacenter.github.io/scalafix/)) write in `project/build.sbt`
 ```scala
-resolvers += Resolver.sonatypeRepo("releases")
+resolvers += Resolver.sonatypeRepo("public")
 libraryDependencies += "com.github.dmytromitin" %% "auxify-syntactic-meta" % [LATEST VERSION]
 ```
 and in `build.sbt`

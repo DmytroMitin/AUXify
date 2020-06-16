@@ -9,7 +9,7 @@ ThisBuild / name                 := "auxify"
 ThisBuild / organization         := "com.github.dmytromitin"
 ThisBuild / organizationName     := "Dmytro Mitin"
 ThisBuild / organizationHomepage := Some(url("https://github.com/DmytroMitin"))
-ThisBuild / version              := "0.8"
+ThisBuild / version              := "0.9"
 ThisBuild / scalaVersion         := scala213
 ThisBuild / scmInfo := Some(ScmInfo(
   url("https://github.com/DmytroMitin/AUXify"),
@@ -118,7 +118,8 @@ lazy val macrosCommonSettings = Seq(
   ),
   resolvers ++= Seq(
     Resolver.sonatypeRepo("releases"),
-    Resolver.sonatypeRepo("snapshots")
+    Resolver.sonatypeRepo("snapshots"),
+    Resolver.sonatypeRepo("public"),
   ),
   libraryDependencies ++= (
     CrossVersion.partialVersion(scalaVersion.value) match {
