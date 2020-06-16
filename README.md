@@ -55,6 +55,8 @@ and `String`-based type class `com.github.dmytromitin.auxify.shapeless.LabelledG
 ```scala
 case class A(i: Int, s: String, b: Boolean)
 implicitly[LabelledGeneric.Aux[A, Record.`"i" -> Int, "s" -> String, "b" -> Boolean`.T]]
+LabelledGeneric[A].to(A(1, "a", true)) // field["i"](1) :: field["s"]("a") :: field["b"](true) :: HNil
+LabelledGeneric[A].from(field["i"](1) :: field["s"]("a") :: field["b"](true) :: HNil) // A(1, "a", true)
 ```
 Also there are convenient syntaxes
 ```scala
