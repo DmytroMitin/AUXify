@@ -21,7 +21,7 @@ ThisBuild / developers := List(Developer(
   email = "dmitin3@gmail.com",
   url = url("https://github.com/DmytroMitin")
 ))
-ThisBuild / description := "Library providing macro/meta annotations @aux, @self, @instance, @apply, @delegated, @syntax"
+ThisBuild / description := "Library providing macro/meta annotations @aux, @self, @instance, @apply, @delegated, @syntax and String-based type class LabelledGeneric"
 ThisBuild / licenses := List("Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / homepage := Some(url("https://github.com/DmytroMitin/AUXify"))
   // Remove all additional repository other than Maven Central from POM
@@ -68,12 +68,14 @@ lazy val shapeless = (project in file("shapeless")).settings(
     scalaTest,
   ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, v)) if v >= 11 =>
-//      Seq("com.chuusai" %% "shapeless" % "2.4.0-M1") //patched
-      Seq() //lib-2.11 ...
+      Seq(organization.value %% "shapeless" % "2.4.0-M1-30032020-e6c3f71-PATCH")
+//      Seq("com.chuusai" %% "shapeless" % "2.4.0-M1")
+//      Seq() //lib-2.11+
     case _                       =>
-//      Seq("com.chuusai" %% "shapeless" % "2.3.3")
-//      Seq("com.chuusai" %% "shapeless" % "2.4.0-SNAPSHOT") //patched
-      Seq() //lib-2.10
+      Seq(organization.value %% "shapeless" % "2.4.0-SNAPSHOT-18022020-bf55524-PATCH")
+//       Seq("com.chuusai" %% "shapeless" % "2.4.0-SNAPSHOT")
+      // Seq("com.chuusai" %% "shapeless" % "2.3.3")
+//      Seq() //lib-2.10
   }),
   scalacOptions ++= Seq(
 //    "-deprecation",
@@ -92,10 +94,10 @@ lazy val shapeless = (project in file("shapeless")).settings(
       addSbtPlugin("org.lyranthe.sbt" % "partial-unification" % "1.1.2")
       Seq(Classpaths.sbtPluginReleases)
   }),
-  unmanagedBase := baseDirectory.value / (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, v)) => s"lib-2.$v"
-    case _            => "lib"
-  })
+//  unmanagedBase := baseDirectory.value / (CrossVersion.partialVersion(scalaVersion.value) match {
+//    case Some((2, v)) => s"lib-2.$v"
+//    case _            => "lib"
+//  })
 )
 
 // ======================= MACROS ================================

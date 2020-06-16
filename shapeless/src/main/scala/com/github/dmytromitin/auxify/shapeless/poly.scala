@@ -16,7 +16,7 @@ object stringToSymbolPoly extends Poly1 {
 //  //required: <notype>
 }
 
-//for 2.10
+//low-priority implicits for 2.10
 trait LowPrioritySymbolToStringPoly2 extends Poly1 {
   implicit def polyCase[S <: Symbol, S1 <: String](implicit sts: SymbolToString.Aux[S, S1], /*witness1: Witness.Aux[S],*/ witness: Witness.Aux[S1]): poly.Case.Aux[symbolToStringPoly.type, S :: HNil, S1] =
     poly.Case(_ => witness.value)

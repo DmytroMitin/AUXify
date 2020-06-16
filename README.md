@@ -33,7 +33,13 @@ scalaVersion := "2.13.2"
 
 resolvers += Resolver.sonatypeRepo("releases")
 
-libraryDependencies += "com.github.dmytromitin" %% "auxify-shapeless" % [LATEST VERSION]
+libraryDependencies ++= Seq(
+  "com.github.dmytromitin" %% "auxify-shapeless" % [LATEST VERSION],
+  "com.github.dmytromitin" %% "shapeless" % (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, v)) if v >= 11 => "2.4.0-M1-30032020-e6c3f71-PATCH"
+    case _                       => "2.4.0-SNAPSHOT-18022020-bf55524-PATCH"
+  })
+)
 ```
 
 Helps to overcome [Shapeless](https://github.com/milessabin/shapeless/) limitation that [`shapeless.LabelledGeneric`](https://github.com/milessabin/shapeless/wiki/Feature-overview:-shapeless-2.0.0#generic-representation-of-sealed-families-of-case-classes) is `Symbol`-based rather than `String`-based.
@@ -212,7 +218,7 @@ So it can be used
 Show[Int].show(10)
 ```
 
-Method materializing type class can return more precise type than the one of implicit to be found (like `the` in [Shapeless](https://github.com/milessabin/shapeless) or [Dotty](https://github.com/lampepfl/dotty)).
+Method materializing type class can return more precise type than the one of implicit to be found (like `the` in [Shapeless](https://github.com/milessabin/shapeless) or `summon` in [Dotty](https://github.com/lampepfl/dotty)).
 For example
 ```scala
 @apply
