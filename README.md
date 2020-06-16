@@ -85,6 +85,8 @@ import SymbolsToStrings.syntax._
 (Inr(Inr(Inl(field[Symbol @@ "c"](true)))): Union.`'a -> Int, 'b -> String, 'c -> Boolean`.T).symbolsToStrings // Inr(Inr(Inl(field[Witness.`"c"`.T](true)))): Union.`"a" -> Int, "b" -> String, "c" -> Boolean`.T
 ```
 
+You can play with AUXify online at Scastie: https://scastie.scala-lang.org/r52fCgloRc2VVM5FnNmbsQ
+
 ## Using AUXify-Macros
 Write in `build.sbt`
 ```scala
