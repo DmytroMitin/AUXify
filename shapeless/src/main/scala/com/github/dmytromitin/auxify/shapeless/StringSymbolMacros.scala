@@ -2,6 +2,7 @@ package com.github.dmytromitin.auxify.shapeless
 
 import macrocompat.bundle
 import shapeless.SingletonTypeUtils
+
 import scala.reflect.macros.whitebox
 
 @bundle
@@ -29,36 +30,121 @@ class StringSymbolMacros(val c: whitebox.Context) extends SingletonTypeUtils {
 //  }
 
   //workaround for 2.12-
+//  def stringToSymbolImpl(s: Tree): Tree = {
+//    q"""
+//      import _root_.shapeless.syntax.singleton._
+//      _root_.com.github.dmytromitin.auxify.shapeless.`package`.stringToSymbolHlp($s.narrow)
+//    """
+//  }
+
+//  def stringToSymbolImpl(s: Tree): Tree = {
+//    q"""
+//      _root_.com.github.dmytromitin.auxify.shapeless.`package`.stringToSymbolHlp(
+//        _root_.shapeless.syntax.singleton.mkSingletonOps($s).narrow
+//      )
+//    """
+//  }
+
+//  def stringToSymbolImpl(s: Tree): Tree = {
+//    val stringType = c.typecheck(
+//      q"""
+//        import _root_.shapeless.syntax.singleton._
+//        $s.narrow
+//      """
+//    ).tpe
+//
+//    val sts = c.inferImplicitValue(
+//      c.typecheck(tq"_root_.com.github.dmytromitin.auxify.shapeless.StringToSymbol[$stringType]", mode = c.TYPEmode).tpe,
+//      silent = false
+//    )
+//
+//    val out = sts.tpe.dealias match {
+//      case RefinedType(_, scope) if scope.size == 1 => scope.head.typeSignature
+//      case typ => c.abort(c.enclosingPosition, s"stringToSymbol: unexpected type $typ=${showRaw(typ)}")
+//    }
+//
+//    val witness = c.inferImplicitValue(
+//      c.typecheck(tq"_root_.shapeless.Witness.Aux[$out]", mode = c.TYPEmode).tpe,
+//      silent = false
+//    )
+////    q"$witness.value.asInstanceOf[_root_.shapeless.Witness.Lt[$out]]"
+////    q"$witness.asInstanceOf[_root_.shapeless.Witness.Lt[$out]].value"
+////    q"$witness.value.asInstanceOf[$out]"
+//    q"$witness.value"
+//  }
+
+//  def stringToSymbolImpl(s: Tree): Tree = {
+//    val stringType = c.typecheck(
+//      q"""
+//        import _root_.shapeless.syntax.singleton._
+//        $s.narrow
+//      """
+//    ).tpe
+//
+//    val sts = c.inferImplicitValue(
+//      c.typecheck(tq"_root_.com.github.dmytromitin.auxify.shapeless.StringToSymbol[$stringType]", mode = c.TYPEmode).tpe,
+//      silent = false
+//    )
+//
+//    val out = sts.tpe.dealias match {
+//      case RefinedType(_, scope) if scope.size == 1 => scope.head.typeSignature
+//      case typ => c.abort(c.enclosingPosition, s"stringToSymbol: unexpected type $typ=${showRaw(typ)}")
+//    }
+//
+//    extractSingletonValue(out)
+//  }
+
   def stringToSymbolImpl(s: Tree): Tree = {
-    q"""
-      import _root_.shapeless.syntax.singleton._
-      _root_.com.github.dmytromitin.auxify.shapeless.`package`.stringToSymbolHlp($s.narrow)
-    """
+    val stringType = c.typecheck(
+      q"""
+        import _root_.shapeless.syntax.singleton._
+        $s.narrow
+      """
+    ).tpe
+
+    SingletonSymbolType.unrefine(stringType) match {
+      case ConstantType(Constant(s: String)) => q"_root_.scala.Symbol.apply($s)"
+      case typ => c.abort(c.enclosingPosition, s"stringToSymbol: unexpected type $typ=${showRaw(typ)}")
+    }
   }
 
+//  def symbolToStringImpl(s: Tree): Tree = {
+//    q"""
+//      import _root_.shapeless.syntax.singleton._
+//      _root_.com.github.dmytromitin.auxify.shapeless.`package`.symbolToStringHlp($s.narrow)
+//    """
+//  }
+
   def symbolToStringImpl(s: Tree): Tree = {
-    q"""
-      import _root_.shapeless.syntax.singleton._
-      _root_.com.github.dmytromitin.auxify.shapeless.`package`.symbolToStringHlp($s.narrow)
-    """
+    val symbolType = c.typecheck(
+      q"""
+        import _root_.shapeless.syntax.singleton._
+        $s.narrow
+      """
+    ).tpe
+
+    /*SingletonSymbolType.unrefine*/(symbolType) match {
+      case SingletonSymbolType(s) => q"$s"
+      case typ => c.abort(c.enclosingPosition, s"symbolToString: unexpected type $typ=${showRaw(typ)}")
+    }
   }
 
   //workaround for 2.10
-  def symbolToStringHlpImpl[S <: Symbol: WeakTypeTag](s: Tree): Tree = {
-    val sts = c.inferImplicitValue(
-      c.typecheck(tq"_root_.com.github.dmytromitin.auxify.shapeless.SymbolToString[${weakTypeOf[S]}]", mode = c.TYPEmode).tpe,
-      silent = false
-    )
-    val out = sts.tpe.dealias match {
-      case RefinedType(_, scope) => scope.head.typeSignature
-      case typ => c.abort(c.enclosingPosition, s"unexpected type $typ=${showRaw(typ)}")
-    }
-    val witness = c.inferImplicitValue(
-      c.typecheck(tq"_root_.shapeless.Witness.Aux[$out]", mode = c.TYPEmode).tpe,
-      silent = false
-    )
-    q"$witness.value"
-  }
+//  def symbolToStringHlpImpl[S <: Symbol: WeakTypeTag](s: Tree): Tree = {
+//    val sts = c.inferImplicitValue(
+//      c.typecheck(tq"_root_.com.github.dmytromitin.auxify.shapeless.SymbolToString[${weakTypeOf[S]}]", mode = c.TYPEmode).tpe,
+//      silent = false
+//    )
+//    val out = sts.tpe.dealias match {
+//      case RefinedType(_, scope) => scope.head.typeSignature
+//      case typ => c.abort(c.enclosingPosition, s"unexpected type $typ=${showRaw(typ)}")
+//    }
+//    val witness = c.inferImplicitValue(
+//      c.typecheck(tq"_root_.shapeless.Witness.Aux[$out]", mode = c.TYPEmode).tpe,
+//      silent = false
+//    )
+//    q"$witness.value"
+//  }
 
 //  def stringToSymbolPolyCseImpl[S <: String: WeakTypeTag, S1 <: Symbol: WeakTypeTag]/*(sts: Tree, witness: Tree)*/: Tree = {
 //    val s = c.freshName("s")
