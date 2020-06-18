@@ -6,14 +6,6 @@ import scala.language.experimental.macros
 object stringToSymbolPoly extends Poly1 {
   implicit def cse[S <: String, S1 <: Symbol](implicit sts: StringToSymbol.Aux[S, S1], /*witness1: Witness.Aux[S],*/ witness: Witness.Aux[S1]): Case.Aux[S, S1] =
     at(_ => witness.value)
-
-//  implicit def cse[S <: String, S1 <: Symbol]/*(implicit sts: StringToSymbol.Aux[S, S1], /*witness1: Witness.Aux[S],*/ witness: Witness.Aux[S1])*/: Case.Aux[S, S1] =
-//  //  at((s: S) => stringToSymbol(s))
-//    macro StringSymbolMacros.stringToSymbolPolyCseImpl[S, S1]
-//  //stringToSymbolPoly.cse is not a valid implicit value for stringToSymbolPoly.Case.Aux[String("a"),Symbol with shapeless.tag.Tagged[String("a")]] because:
-//  //hasMatchingSymbol reported error: type mismatch;
-//  //found   : String("s1")
-//  //required: <notype>
 }
 
 //low-priority implicits for 2.10
