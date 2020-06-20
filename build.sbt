@@ -101,7 +101,8 @@ lazy val shapeless = (project in file("shapeless")).settings(
 )
 
 // ======================= MACROS ================================
-lazy val macroCompatV = "1.1.1"
+lazy val macroCompatV = "1.1.2"
+//lazy val macroCompatV = "1.1.1"
 
 lazy val macrosCommonSettings = Seq(
   crossScalaVersions := supportedScalaVersions,
@@ -124,14 +125,15 @@ lazy val macrosCommonSettings = Seq(
   libraryDependencies ++= (
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, v)) if v >= 13 => Seq(
-        "org.typelevel" % "macro-compat_2.13.0-RC2" % macroCompatV,
+//        "org.typelevel" % "macro-compat_2.13.0-RC2" % macroCompatV,
       )
       case _                       => Seq(
         compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
-        "org.typelevel" %% "macro-compat" % macroCompatV,
+//        "org.typelevel" %% "macro-compat" % macroCompatV,
       )
     }
   ) ++ Seq(
+    "com.github.dmytromitin" %% "macro-compat" % macroCompatV,
     scalaOrganization.value % "scala-compiler" % scalaVersion.value % Provided, // for macro-compat
   )
 )
