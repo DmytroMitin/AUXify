@@ -19,6 +19,7 @@
   * [@apply (materializer)](#apply--materializer-)
   * [@delegated](#delegated)
   * [@syntax](#syntax)
+  * [@poly](#poly)
 - [Using AUXify-Meta](#using-auxify-meta)
   * [Code generation with Scalafix](#code-generation-with-scalafix)
   * [Rewriting with Scalafix](#rewriting-with-scalafix)
@@ -303,6 +304,32 @@ import Monoid.syntax._
 [Simulacrum](https://github.com/typelevel/simulacrum) annotation `@typeclass` also generates syntax but doesn't support type classes with multiple type parameters.
 
 Inheritance of type classes is not supported (anyway it's [broken](https://typelevel.org/blog/2016/09/30/subtype-typeclasses.html)).
+
+## @poly
+Transforms
+```scala
+@poly
+trait Add[N <: Nat, M <: Nat] {
+  type Out <: Nat
+  def apply(n: N, m: M): Out
+}
+
+```
+into
+```scala
+trait Add[N <: Nat, M <: Nat] {
+  type Out <: Nat
+  def apply(n: N, m: M): Out
+}
+
+object Add {
+  object addPoly extends Poly2 {
+    implicit def cse[N <: Nat, M <: Nat](implicit add: Add[N, M]): Case.Aux[N, M, add.Out] = at((n, m) => add(n, m)) 
+  }
+}
+```
+
+`@poly` is not implemented yet. See [issue](https://github.com/DmytroMitin/AUXify/issues/34).
 
 ## Using AUXify-Meta
 
