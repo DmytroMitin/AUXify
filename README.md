@@ -5,7 +5,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.dmytromitin/auxify-macros_2.13.svg?label=maven%20central&color=success)](https://search.maven.org/search?q=g:%22com.github.dmytromitin%22%20AND%20a:%22auxify-macros_2.13%22)
 [![Sonatype Snapshots](https://img.shields.io/nexus/r/https/oss.sonatype.org/com.github.dmytromitin/auxify-macros_2.13.svg?color=success)](https://oss.sonatype.org/content/groups/public/com/github/dmytromitin/auxify-macros_2.13/)
 [![javadoc](https://javadoc.io/badge2/com.github.dmytromitin/auxify-macros_2.13/javadoc.svg)](https://javadoc.io/doc/com.github.dmytromitin/auxify-macros_2.13)
-[![Scaladex](https://index.scala-lang.org/dmytromitin/auxify/auxify-macros/latest.svg?color=green)](https://index.scala-lang.org/dmytromitin/auxify/auxify-macros)
+[![Scaladex](https://index.scala-lang.org/dmytromitin/auxify/auxify-macros/latest.svg?color=success)](https://index.scala-lang.org/dmytromitin/auxify/auxify-macros)
 [![Join the chat at https://gitter.im/DmytroMitin/AUXify](https://badges.gitter.im/DmytroMitin/AUXify.svg)](https://gitter.im/DmytroMitin/AUXify?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [mvnrepository](https://mvnrepository.com/artifact/com.github.dmytromitin)
