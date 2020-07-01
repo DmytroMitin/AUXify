@@ -16,7 +16,7 @@ class StringSymbolMacros(val c: whitebox.Context) extends SingletonTypeUtils {
   }
 
   def symbolToStringImpl(s: Tree): Tree = {
-    /*SingletonSymbolType.unrefine*/(narrowedType(s)) match {
+    SingletonSymbolType.unrefine(narrowedType(s)) match {
       case SingletonSymbolType(s) => q"$s"
       case typ => c.abort(c.enclosingPosition, s"symbolToString: unexpected type $typ=${showRaw(typ)}")
     }
