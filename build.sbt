@@ -259,7 +259,7 @@ lazy val syntacticMeta = (project in file("syntactic-meta"))
   .settings(
     name := "auxify-syntactic-meta",
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "scalameta" % "4.3.14",
+      "org.scalameta" %% "scalameta" % "4.3.18",
     ),
     syntacticMetaCommonSettings,
   )
