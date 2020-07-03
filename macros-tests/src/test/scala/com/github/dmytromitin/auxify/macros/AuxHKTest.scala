@@ -1,9 +1,10 @@
 package com.github.dmytromitin.auxify.macros
 
 import scala.language.{higherKinds, reflectiveCalls}
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class AuxHKTest extends FlatSpec with Matchers {
+class AuxHKTest extends AnyFlatSpec with Matchers {
   sealed trait Nat
   object _0 extends Nat
   type _0 = _0.type

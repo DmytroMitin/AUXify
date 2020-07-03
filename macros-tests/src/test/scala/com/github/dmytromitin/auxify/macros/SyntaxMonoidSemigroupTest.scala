@@ -1,8 +1,9 @@
 package com.github.dmytromitin.auxify.macros
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class SyntaxMonoidSemigroupTest extends FlatSpec with Matchers {
+class SyntaxMonoidSemigroupTest extends AnyFlatSpec with Matchers {
   @syntax
   trait Semigroup[A] {
     def combine(a: A, a1: A): A

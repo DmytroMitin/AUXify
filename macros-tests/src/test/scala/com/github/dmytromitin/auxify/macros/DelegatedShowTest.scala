@@ -1,8 +1,9 @@
 package com.github.dmytromitin.auxify.macros
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DelegatedShowTest extends FlatSpec with Matchers {
+class DelegatedShowTest extends AnyFlatSpec with Matchers {
   @delegated
   trait Show[A] {
     def show(a: A): String

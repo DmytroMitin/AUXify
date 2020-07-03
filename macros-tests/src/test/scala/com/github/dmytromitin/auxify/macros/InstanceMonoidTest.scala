@@ -1,8 +1,9 @@
 package com.github.dmytromitin.auxify.macros
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class InstanceMonoidTest extends FlatSpec with Matchers {
+class InstanceMonoidTest extends AnyFlatSpec with Matchers {
   @instance
   trait Monoid[A] {
     def empty: A

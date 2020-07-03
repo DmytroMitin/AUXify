@@ -1,8 +1,9 @@
 package com.github.dmytromitin.auxify.macros
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class AuxInstanceTest2 extends FlatSpec with Matchers {
+class AuxInstanceTest2 extends AnyFlatSpec with Matchers {
   sealed trait Nat
   case object _0 extends Nat
   type _0 = _0.type

@@ -1,8 +1,9 @@
 package com.github.dmytromitin.auxify.macros
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class AuxNoCompanionTest extends FlatSpec with Matchers {
+class AuxNoCompanionTest extends AnyFlatSpec with Matchers {
   sealed trait Nat
 
   @aux

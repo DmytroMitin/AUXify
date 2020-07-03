@@ -1,8 +1,9 @@
 package com.github.dmytromitin.auxify.macros
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class InstanceByNameTest extends FlatSpec with Matchers {
+class InstanceByNameTest extends AnyFlatSpec with Matchers {
   @instance
   trait IntHolder {
     def value: Int

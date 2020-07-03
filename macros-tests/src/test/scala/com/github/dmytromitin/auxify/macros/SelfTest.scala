@@ -1,9 +1,10 @@
 package com.github.dmytromitin.auxify.macros
 
 import scala.language.higherKinds
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class SelfTest extends FlatSpec with Matchers {
+class SelfTest extends AnyFlatSpec with Matchers {
   @self
   sealed trait Nat { self =>
 //    type Self >: this.type <: Nat { type Self = self.Self }

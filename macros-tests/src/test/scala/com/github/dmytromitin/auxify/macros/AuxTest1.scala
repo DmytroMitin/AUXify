@@ -1,11 +1,13 @@
 package com.github.dmytromitin.auxify.macros
 
-import org.scalatest._
+import org.scalatest.Ignore
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.language.higherKinds
 
 @Ignore
-class AuxTest1 extends FlatSpec with Matchers {
+class AuxTest1 extends AnyFlatSpec with Matchers {
 
   // TODO #9
 //  @aux
