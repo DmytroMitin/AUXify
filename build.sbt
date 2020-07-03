@@ -1,9 +1,9 @@
-lazy val scala213 = "2.13.2"
+lazy val scala213 = "2.13.3"
 lazy val scala212 = "2.12.11"
 lazy val scala211 = "2.11.12"
 lazy val scala210 = "2.10.7"
 lazy val supportedScalaVersions = List(scala213, scala212, scala211, scala210)
-lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.1.2" % Test
+lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.2.0" % Test
 
 ThisBuild / name                 := "auxify"
 ThisBuild / organization         := "com.github.dmytromitin"
