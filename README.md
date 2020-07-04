@@ -29,7 +29,7 @@
 ## Using AUXify-Shapeless
 Write in `build.sbt`
 ```scala
-scalaVersion := "2.13.2"
+scalaVersion := "2.13.3"
 //scalaVersion := "2.12.11"
 //scalaVersion := "2.11.12"
 //scalaVersion := "2.10.7"
@@ -93,7 +93,7 @@ You can play with AUXify online at Scastie: https://scastie.scala-lang.org/r52fC
 ## Using AUXify-Macros
 Write in `build.sbt`
 ```scala
-scalaVersion := "2.13.2"
+scalaVersion := "2.13.3"
 //scalaVersion := "2.12.11"
 //scalaVersion := "2.11.12"
 //scalaVersion := "2.10.7"
@@ -342,7 +342,7 @@ Meta annotation `@aux` works only with classes on contrary to macro annotation `
 ### Code generation with Scalafix
 For code generation with [Scalameta](https://scalameta.org/) + [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) + [Scalafix](https://scalacenter.github.io/scalafix/) write in `project/plugins.sbt`
 ```scala
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.17")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.18")
 ```
 and in `build.sbt`
 ```scala
@@ -393,7 +393,7 @@ Example project is [here](https://github.com/DmytroMitin/scalafix-codegen).
 ### Rewriting with Scalafix
 For using rewriting rules with [Scalameta](https://scalameta.org/) + [SemanticDB](https://scalameta.org/docs/semanticdb/guide.html) + [Scalafix](https://scalacenter.github.io/scalafix/) write in `project/plugins.sbt`
 ```scala
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.17")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.18")
 ```
 and in `build.sbt`
 ```scala
@@ -402,7 +402,7 @@ import com.geirsson.coursiersmall.{Repository => R}
 scalafixResolvers in ThisBuild += new R.Maven("https://oss.sonatype.org/content/groups/public/")
 scalafixDependencies in ThisBuild += "com.github.dmytromitin" %% "auxify-meta" % [LATEST VERSION]
 
-scalaVersion := "2.13.2"
+scalaVersion := "2.13.3"
 //scalaVersion := "2.12.11"
 //scalaVersion := "2.11.12"
 
@@ -424,7 +424,7 @@ libraryDependencies += "com.github.dmytromitin" %% "auxify-syntactic-meta" % [LA
 and in `build.sbt`
 ```scala
 inThisBuild(Seq(
-  scalaVersion := "2.13.2"
+  scalaVersion := "2.13.3"
   //scalaVersion := "2.12.11"
   //scalaVersion := "2.11.12"
 ))
